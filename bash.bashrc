@@ -36,9 +36,8 @@ export EDITOR=vim
 export HISTCONTROL=ignoredups
 export HISTSIZE=10000
 export HISTFILESIZE=50000
-export HISTIGNORE="cd:ls:clear:history"
+export HISTIGNORE="cd:..:ls:ll:la:clear:history"
 # Set terminal title with the last command
-# export PROMPT_COMMAND='history -a;echo -en "\e]2;";history 1|sed "s/^[ \t]*[0-9]\{1,\}  //g";echo -en "\e\\"';
 
 ##################################
 ### Colors
@@ -120,34 +119,44 @@ On_IWhite='\e[0;107m'   # White
 ### Prompt
 ##################################
 
-PROMPT_COMMAND='Return=$?;'
+# export PROMPT_COMMAND='history -a;echo -en "\e]2;";history 1|sed "s/^[ \t]*[0-9]\{1,\}  //g";echo -en "\e\\"';
+#PROMPT_COMMAND='Return=$?;echo -en "\e]2;test\e\\"';
 ReturnValue='$(echo $Return)'
 ReturnSmiley='$(if [[ $Return = 0 ]]; then echo -ne "\[$Blue\];)\[$NoColor\]"; else echo -ne "\[$Red\];(\[$NoColor\]"; fi;)'
 
-IpRegex='192\.168\.1\.([0-9]{1,3})'
-Ip=`ip -o -4 address`;
-if [[ $Ip =~ $IpRegex ]]; then
-    IpNum=`expr 91 + ${BASH_REMATCH[1]} % 6`;
-    IpColor=`echo "\e[0;$IpNum"m`;
-fi
+IpLast=`ip -o -4 address | grep -o '192.168.[0-9]\{1,3\}.[0-9]\{1,3\}' | head -n 1 | sed -e 's/192\.168\.[0-9]\{1,3\}\.\([0-9]\)/\1/'`
+IpNum=`expr 91 + $IpLast % 6`
+IpColor=`echo "\e[0;$IpNum"m`;
 
 if [ $(whoami) == 'root' ]; then
     Time="|"
+    History="\[$Red\][\!]\[$NoColor\]"
     User="\[$Red\]\u\[$NoColor\]"
     Path="\[$Yellow\]\w\[$NoColor\]" # Partial Path
     LastChar=#
 else
     Time="\[$Blue\][\t]\[$NoColor\]"
+    History="\[$Red\][\!]\[$NoColor\]"
     User="\[$White\]\u\[$NoColor\]"
     Path="\[$Yellow\]\W\[$NoColor\]" # Full Path
     LastChar=\$
 fi
 Host="\[$IpColor\]\h\[$NoColor\]"
 
-PS1="$ReturnSmiley$Time$User@$Host:$Path$LastChar "
+PS1="$ReturnSmiley$History$Time$User@$Host:$Path$LastChar "
 PS2='> '
 PS3='> '
 PS4='+ '
+
+TTY=`tty | sed -e "s/\/dev\/\(.*\)/\1/"`
+Title="$(whoami)@$HOSTNAME | $(date "+%A %d %B %Y") | $HOSTTYPE | $TTY[$SHLVL]"
+if [[ $TTY =~ tty ]]; then
+    Prompt="\t\t\t\t\t$Title\n"
+else
+    Prompt="\e]2;$Title\e\\"
+fi
+
+PROMPT_COMMAND='Return=$?;echo -en $Prompt;';
 
 ##################################
 ### Functions
@@ -218,30 +227,27 @@ alias dir='dir --color=auto'
 alias grep='grep --colour=auto'
 alias diff='colordiff'
 
-# Shortcuts
-alias ll='ls -lh'
-alias la='ls -lha'
+# History
+alias h='history | grep $1'
+alias hc='mv -i ~/.bash_history ~/.bash_history_$(date "+%Y%m%d")'
+alias hh='history | head'
+alias ht='history | tail'
+
 alias ..='cd ..'
+alias c='var=$(cal -m); echo "${var/$(date +%-d)/$(echo -e "\033[1;31m$(date +%-d)\033[0m")}"'
+alias da='date "+%A %d %B %Y [%T]"'
 alias df='df -h'
 alias du='du -c -h'
+alias du1='du --max-depth=1'
+alias la='ls -lha'
+alias ll='ls -lh'
+alias lsgroups='cat /etc/group | cut -d: -f1'
+alias lsusers='cat /etc/passwd | cut -d: -f1'
 alias mkdir='mkdir -p -v'
 alias more='less'
-alias ping='ping -c 5'
-
-# Useful
-alias h='history | grep $1'      # requires an argument
 alias net='netstat -tlnp'
-alias c='var=$(cal -m); echo "${var/$(date +%-d)/$(echo -e "\033[1;31m$(date +%-d)\033[0m")}"'
-alias du1='du --max-depth=1'
-alias da='date "+%A, %B %d, %Y [%T]"'
-alias lsusers='cat /etc/passwd | cut -d: -f1'
-alias lsgroups='cat /etc/group | cut -d: -f1'
-
-# Pacman + Packer
 alias p='packer --noedit --noconfirm'
 alias pac='sudo pacman'
-alias paclist="sudo pacman -Qi | awk '/^Nom/ {pkg=$3} /Taille/ {print $4$5,pkg}' | sort -n"
+alias paclist='sudo pacman -Qi | awk '\''/^Nom/ {pkg=} /Taille/ {print ,pkg}'\'' | sort -n'
+alias ping='ping -c 5'
 alias pkglist='expac -s "%-30n" > pkglist'
-
-# Try to keep environment pollution down, EPA loves us.
-unset use_color safe_term color_exist
