@@ -131,9 +131,9 @@ color_exist=""
 if ${use_color} ; then
     # Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
     eval $(dircolors -b /etc/bash.colors)
-    #alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias grep='grep --colour=auto'
+    alias ls='ls --color=auto'
+    alias dir='dir --color=auto'
+    alias grep='grep --colour=auto'
 fi
 
 ##################################
@@ -175,7 +175,7 @@ PS4='+ '
 
 bkp()
 {
-    cp $1{,.bkp}
+    cp -R $1{,.bkp}
 }
 wiki()
 {
@@ -213,9 +213,6 @@ alias p='packer --noedit --noconfirm'
 alias pac='sudo pacman'
 alias paclist="sudo pacman -Qi | awk '/^Nom/ {pkg=$3} /Taille/ {print $4$5,pkg}' | sort -n"
 alias pkglist='expac -s "%-30n" > pkglist'
-
-
-
 
 # Try to keep environment pollution down, EPA loves us.
 unset use_color safe_term color_exist

@@ -7,4 +7,5 @@ vimrc:
 all:
 	cp $(CURDIR)/vimrc /etc/vimrc
 	cp $(CURDIR)/bash.bashrc /etc/bash.bashrc
+	cp $(CURDIR)/bash.colors /etc/bash.colors
 
