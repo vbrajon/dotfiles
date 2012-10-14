@@ -16,6 +16,8 @@ shopt -s checkwinsize
 shopt -s histappend
 # Correct little typography error
 shopt -s cdspell
+# Global extensions (needed for extract)
+shopt -s extglob
 # Allow accent
 bind 'set convert-meta off'
 # Try to enable the auto-completion.
@@ -30,16 +32,13 @@ umask 022
 ##################################
 
 export PATH=${PATH}:/root/.gem/ruby/1.9.1/bin:/opt/android-sdk/platform-tools
-# Choix de l'éditeur par défaut
 export EDITOR=vim
-# ne pas mettre en double dans l'historique les commandes tapées 2x
 export HISTCONTROL=ignoredups
-# lignes de l'historique par session bash
 export HISTSIZE=10000
-# lignes de l'historique conservées
 export HISTFILESIZE=50000
-# Ne pas garder les trucs inutiles dans les logs (attention peut casser certaines habitudes)
-# export HISTIGNORE="cd:ls:[bf]g:clear"
+export HISTIGNORE="cd:ls:clear:history"
+# Set terminal title with the last command
+# export PROMPT_COMMAND='history -a;echo -en "\e]2;";history 1|sed "s/^[ \t]*[0-9]\{1,\}  //g";echo -en "\e\\"';
 
 ##################################
 ### Colors
@@ -117,25 +116,6 @@ On_IPurple='\e[10;95m'  # Purple
 On_ICyan='\e[0;106m'    # Cyan
 On_IWhite='\e[0;107m'   # White
 
-use_color=false
-# sanitize TERM:
-safe_term=${TERM//[^[:alnum:]]/?}
-color_exist=""
-
-[[ -f /etc/bash.colors ]] && color_exist="${color_exist}$(</etc/bash.colors)"
-[[ -z ${color_exist}    ]] \
-    && type -P dircolors >/dev/null \
-    && color_exist=$(dircolors --print-database)
-[[ $'\n'${color_exist} == *$'\n'"TERM "${safe_term}* ]] && use_color=true
-
-if ${use_color} ; then
-    # Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
-    eval $(dircolors -b /etc/bash.colors)
-    alias ls='ls --color=auto'
-    alias dir='dir --color=auto'
-    alias grep='grep --colour=auto'
-fi
-
 ##################################
 ### Prompt
 ##################################
@@ -185,30 +165,79 @@ delay() # delay "You can simulate on-screen typing just like in the movies"
 {
     echo $1 | pv -qL 5
 }
-h()
-{
-    history | grep $1
-}
 pass()
 {
     pass=`echo -n $1 | md5sum | cut -c 1-8`;
     gpaste add $pass;
     echo "Password for $1 saved : $pass";
 }
+extract() {
+    local c e i
+
+    (($#)) || return
+
+    for i; do
+        c=''
+        e=1
+
+        if [[ ! -r $i ]]; then
+            echo "$0: file is unreadable: \`$i'" >&2
+            continue
+        fi
+
+        case $i in
+        *.t@(gz|lz|xz|b@(2|z?(2))|a@(z|r?(.@(Z|bz?(2)|gz|lzma|xz)))))
+               c='bsdtar xvf';;
+        *.7z)  c='7z x';;
+        *.Z)   c='uncompress';;
+        *.bz2) c='bunzip2';;
+        *.exe) c='cabextract';;
+        *.gz)  c='gunzip';;
+        *.rar) c='unrar x';;
+        *.xz)  c='unxz';;
+        *.zip) c='unzip';;
+        *)     echo "$0: unrecognized file extension: \`$i'" >&2
+               continue;;
+        esac
+
+        command $c "$i"
+        e=$?
+    done
+
+    return $e
+}
 
 ##################################
 ### Aliases
 ##################################
 
-alias c='var=$(cal -m); echo "${var/$(date +%-d)/$(echo -e "\033[1;31m$(date +%-d)\033[0m")}"'
-alias net='netstat -tlnp'
-alias lsusers='cat /etc/passwd | cut -d: -f1'
-alias lsgroups='cat /etc/group | cut -d: -f1'
+# Enable colors for ls, etc.  Prefer ~/.dir_colors #64489
+eval $(dircolors -b /etc/bash.colors)
+alias ls='ls --color=auto'
+alias dir='dir --color=auto'
+alias grep='grep --colour=auto'
+alias diff='colordiff'
 
+# Shortcuts
 alias ll='ls -lh'
 alias la='ls -lha'
 alias ..='cd ..'
+alias df='df -h'
+alias du='du -c -h'
+alias mkdir='mkdir -p -v'
+alias more='less'
+alias ping='ping -c 5'
 
+# Useful
+alias h='history | grep $1'      # requires an argument
+alias net='netstat -tlnp'
+alias c='var=$(cal -m); echo "${var/$(date +%-d)/$(echo -e "\033[1;31m$(date +%-d)\033[0m")}"'
+alias du1='du --max-depth=1'
+alias da='date "+%A, %B %d, %Y [%T]"'
+alias lsusers='cat /etc/passwd | cut -d: -f1'
+alias lsgroups='cat /etc/group | cut -d: -f1'
+
+# Pacman + Packer
 alias p='packer --noedit --noconfirm'
 alias pac='sudo pacman'
 alias paclist="sudo pacman -Qi | awk '/^Nom/ {pkg=$3} /Taille/ {print $4$5,pkg}' | sort -n"
