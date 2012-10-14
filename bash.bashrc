@@ -31,7 +31,8 @@ umask 022
 ### Export
 ##################################
 
-export PATH=${PATH}:/root/.gem/ruby/1.9.1/bin:/opt/android-sdk/platform-tools
+#export PATH=${PATH}:/root/.gem/ruby/1.9.1/bin:/opt/android-sdk/platform-tools
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 export EDITOR=vim
 export HISTCONTROL=ignoredups
 export HISTSIZE=10000
@@ -119,8 +120,6 @@ On_IWhite='\e[0;107m'   # White
 ### Prompt
 ##################################
 
-# export PROMPT_COMMAND='history -a;echo -en "\e]2;";history 1|sed "s/^[ \t]*[0-9]\{1,\}  //g";echo -en "\e\\"';
-#PROMPT_COMMAND='Return=$?;echo -en "\e]2;test\e\\"';
 ReturnValue='$(echo $Return)'
 ReturnSmiley='$(if [[ $Return = 0 ]]; then echo -ne "\[$Blue\];)\[$NoColor\]"; else echo -ne "\[$Red\];(\[$NoColor\]"; fi;)'
 
