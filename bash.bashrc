@@ -141,8 +141,9 @@ IpLast=`ip -o -4 address | grep -o '192.168.[0-9]\{1,3\}.[0-9]\{1,3\}' | head -n
 IpNum=`expr 91 + $IpLast % 6`
 IpColor=`echo "\e[0;$IpNum"m`;
 Host="\[$IpColor\]\h\[$NoColor\]"
+GitPath=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'`
 
-PS1="$ReturnSmiley$History$Time$User@$Host:$Path$LastChar "
+PS1="$ReturnSmiley$History$Time$User@$Host:$Path$GitPath$LastChar "
 PS2='> '
 PS3='> '
 PS4='+ '
@@ -232,21 +233,45 @@ alias hc='mv -i ~/.bash_history ~/.bash_history_$(date "+%Y%m%d")'
 alias hh='history | head'
 alias ht='history | tail'
 
-alias ..='cd ..'
+# Navigation
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+alias ~="cd ~" # `cd` is probably faster to type though
+alias -- -="cd -"
+
+# Shortcuts
+alias d="cd ~/Dev"
+alias dl="cd ~/Downloads"
+alias dt="cd ~/Desktop"
+alias d1='du --max-depth=1'
+alias g="git"
+alias j="jobs"
+alias v="vim"
+alias s="subl ."
+alias net='netstat -tlnp'
+alias lsd='ls -l ${colorflag} | grep "^d"'
+alias ip="curl ifconfig.me"
+
+# Custom functions
 alias c='var=$(cal -m); echo "${var/$(date +%-d)/$(echo -e "\033[1;31m$(date +%-d)\033[0m")}"'
 alias da='date "+%A %d %B %Y [%T]"'
-alias df='df -h'
-alias du='du -c -h'
-alias du1='du --max-depth=1'
-alias la='ls -lha'
-alias ll='ls -lh'
 alias lsgroups='cat /etc/group | cut -d: -f1'
 alias lsusers='cat /etc/passwd | cut -d: -f1'
+alias xdebug='export XDEBUG_CONFIG="idekey=netbeans-xdebug"''
+
+# Overwrite aliases
+alias df='df -h'
+alias du='du -c -h'
+alias la='ls -lha'
+alias ll='ls -lh'
 alias mkdir='mkdir -p -v'
 alias more='less'
-alias net='netstat -tlnp'
+alias ping='ping -c 5'
+
+# Package management (Pacman+Packer)
 alias p='packer --noedit --noconfirm'
 alias pac='sudo pacman'
 alias paclist='sudo pacman -Qi | awk '\''/^Nom/ {pkg=} /Taille/ {print ,pkg}'\'' | sort -n'
-alias ping='ping -c 5'
 alias pkglist='expac -s "%-30n" > pkglist'
