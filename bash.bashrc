@@ -37,7 +37,7 @@ export EDITOR=vim
 export HISTCONTROL=ignoredups
 export HISTSIZE=10000
 export HISTFILESIZE=50000
-export HISTIGNORE="cd:..:ls:ll:la:clear:history"
+export HISTIGNORE="cd:..:ls:ll:la:clear:history:hh:ht:hc"
 # Set terminal title with the last command
 
 ##################################
@@ -123,23 +123,23 @@ On_IWhite='\e[0;107m'   # White
 ReturnValue='$(echo $Return)'
 ReturnSmiley='$(if [[ $Return = 0 ]]; then echo -ne "\[$Blue\];)\[$NoColor\]"; else echo -ne "\[$Red\];(\[$NoColor\]"; fi;)'
 
-IpLast=`ip -o -4 address | grep -o '192.168.[0-9]\{1,3\}.[0-9]\{1,3\}' | head -n 1 | sed -e 's/192\.168\.[0-9]\{1,3\}\.\([0-9]\)/\1/'`
-IpNum=`expr 91 + $IpLast % 6`
-IpColor=`echo "\e[0;$IpNum"m`;
-
 if [ $(whoami) == 'root' ]; then
+    History="\[$White\][\!]\[$NoColor\]"
     Time="|"
-    History="\[$Red\][\!]\[$NoColor\]"
     User="\[$Red\]\u\[$NoColor\]"
     Path="\[$Yellow\]\w\[$NoColor\]" # Partial Path
     LastChar=#
 else
+    History="\[$White\][\!]\[$NoColor\]"
     Time="\[$Blue\][\t]\[$NoColor\]"
-    History="\[$Red\][\!]\[$NoColor\]"
     User="\[$White\]\u\[$NoColor\]"
     Path="\[$Yellow\]\W\[$NoColor\]" # Full Path
     LastChar=\$
 fi
+
+IpLast=`ip -o -4 address | grep -o '192.168.[0-9]\{1,3\}.[0-9]\{1,3\}' | head -n 1 | sed -e 's/192\.168\.[0-9]\{1,3\}\.\([0-9]\)/\1/'`
+IpNum=`expr 91 + $IpLast % 6`
+IpColor=`echo "\e[0;$IpNum"m`;
 Host="\[$IpColor\]\h\[$NoColor\]"
 
 PS1="$ReturnSmiley$History$Time$User@$Host:$Path$LastChar "
