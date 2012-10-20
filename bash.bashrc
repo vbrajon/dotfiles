@@ -137,16 +137,21 @@ else
     LastChar=\$
 fi
 
-IpLast=`ip -o -4 address | grep -o '192.168.[0-9]\{1,3\}.[0-9]\{1,3\}' | head -n 1 | sed -e 's/192\.168\.[0-9]\{1,3\}\.\([0-9]\)/\1/'`
-IpNum=`expr 91 + $IpLast % 6`
+IpLast=`ip -o -4 address 2> /dev/null | grep -o '192.168.[0-9]\{1,3\}.[0-9]\{1,3\}' | head -n 1 | sed -e 's/192\.168\.[0-9]\{1,3\}\.\([0-9]\)/\1/'`
+if [[ -z IpLast ]]; then
+    IpNum='97' # White
+else
+    IpNum=`expr 91 + $IpLast % 6`
+fi
 IpColor=`echo "\e[0;$IpNum"m`;
 Host="\[$IpColor\]\h\[$NoColor\]"
-GitPath=`git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'`
 
-PS1="$ReturnSmiley$History$Time$User@$Host:$Path$GitPath$LastChar "
+
+PS1="$ReturnSmiley$History$Time$User@$Host:$Path""\[$White\]["'$(git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' | cut -c3-)'"]\[$NoColor\]""$LastChar "
 PS2='> '
 PS3='> '
 PS4='+ '
+
 
 TTY=`tty | sed -e "s/\/dev\/\(.*\)/\1/"`
 Title="$(whoami)@$HOSTNAME | $(date "+%A %d %B %Y") | $HOSTTYPE | $TTY[$SHLVL]"
@@ -252,14 +257,14 @@ alias v="vim"
 alias s="subl ."
 alias net='netstat -tlnp'
 alias lsd='ls -l ${colorflag} | grep "^d"'
-alias ip="curl ifconfig.me"
+alias myip="curl ifconfig.me"
 
 # Custom functions
 alias c='var=$(cal -m); echo "${var/$(date +%-d)/$(echo -e "\033[1;31m$(date +%-d)\033[0m")}"'
 alias da='date "+%A %d %B %Y [%T]"'
 alias lsgroups='cat /etc/group | cut -d: -f1'
 alias lsusers='cat /etc/passwd | cut -d: -f1'
-alias xdebug='export XDEBUG_CONFIG="idekey=netbeans-xdebug"''
+alias xdebug='export XDEBUG_CONFIG="idekey=netbeans-xdebug"'
 
 # Overwrite aliases
 alias df='df -h'
