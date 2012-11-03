@@ -120,41 +120,45 @@ On_IWhite='\e[0;107m'   # White
 ### Prompt
 ##################################
 
+cmd-wrap()
+{
+    echo '$('$*')'
+}
+
+DateTime='$(date "+%d/%m/%y - %H:%M")'
+
 ReturnValue='$(echo $Return)'
 ReturnSmiley='$(if [[ $Return = 0 ]]; then echo -ne "\[$Blue\];)\[$NoColor\]"; else echo -ne "\[$Red\];(\[$NoColor\]"; fi;)'
 
+GitBranch='git branch --no-color 2> /dev/null | sed -e "/^[^*]/d" | cut -c3-'
+Git="\[$White\][$(cmd-wrap $GitBranch)]\[$NoColor\]"
+
+IpLocal=$(ip -o -4 addr 2> /dev/null | grep -o "192.168.[0-9]\{1,3\}.[0-9]\{1,3\}" | head -n 1 | sed -e "s/192\.168\.[0-9]\{1,3\}\.\([0-9]\{1,3\}\)/\1/")
+IpNum=$(expr 97 - $IpLocal % 6)
+IpColor=$(echo "\e[0;$IpNum"m)
+
+Host="\[$IpColor\]\h\[$NoColor\]"
+
+##History="\[$White\][\!]\[$NoColor\]"
+##Time="\[$Blue\][\t]\[$NoColor\]"
+
 if [ $(whoami) == 'root' ]; then
-    History="\[$White\][\!]\[$NoColor\]"
-    Time="|"
     User="\[$Red\]\u\[$NoColor\]"
     Path="\[$Yellow\]\w\[$NoColor\]" # Partial Path
     LastChar=#
 else
-    History="\[$White\][\!]\[$NoColor\]"
-    Time="\[$Blue\][\t]\[$NoColor\]"
     User="\[$White\]\u\[$NoColor\]"
     Path="\[$Yellow\]\W\[$NoColor\]" # Full Path
     LastChar=\$
 fi
 
-IpLast=`ip -o -4 address 2> /dev/null | grep -o '192.168.[0-9]\{1,3\}.[0-9]\{1,3\}' | head -n 1 | sed -e 's/192\.168\.[0-9]\{1,3\}\.\([0-9]\)/\1/'`
-if [[ -z IpLast ]]; then
-    IpNum='97' # White
-else
-    IpNum=`expr 91 + $IpLast % 6`
-fi
-IpColor=`echo "\e[0;$IpNum"m`;
-Host="\[$IpColor\]\h\[$NoColor\]"
-
-
-PS1="$ReturnSmiley$History$Time$User@$Host:$Path""\[$White\]["'$(git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' | cut -c3-)'"]\[$NoColor\]""$LastChar "
+PS1="$ReturnSmiley$User@$Host:$Path$Git$LastChar "
 PS2='> '
 PS3='> '
 PS4='+ '
 
-
 TTY=`tty | sed -e "s/\/dev\/\(.*\)/\1/"`
-Title="$(whoami)@$HOSTNAME | $(date "+%A %d %B %Y") | $HOSTTYPE | $TTY[$SHLVL]"
+Title="$(whoami)@$HOSTNAME | $HOSTTYPE | $TTY[$SHLVL]"
 if [[ $TTY =~ tty ]]; then
     Prompt="\t\t\t\t\t$Title\n"
 else
@@ -167,7 +171,7 @@ PROMPT_COMMAND='Return=$?;echo -en $Prompt;';
 ### Functions
 ##################################
 
-bkp()
+backup()
 {
     cp -R $1{,.bkp}
 }
@@ -265,12 +269,12 @@ alias da='date "+%A %d %B %Y [%T]"'
 alias lsgroups='cat /etc/group | cut -d: -f1'
 alias lsusers='cat /etc/passwd | cut -d: -f1'
 alias xdebug='export XDEBUG_CONFIG="idekey=netbeans-xdebug"'
+alias date-sync='{ ntpd -qg; hwclock -w; } &'
 
 # Overwrite aliases
 alias df='df -h'
 alias du='du -c -h'
-alias la='ls -lha'
-alias ll='ls -lh'
+alias ll='ls -lhAF --sort=extension --group-directories-first'
 alias mkdir='mkdir -p -v'
 alias more='less'
 alias ping='ping -c 5'
