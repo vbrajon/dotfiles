@@ -1,0 +1,24 @@
+[user]
+        name  = Valentin Brajon
+        email = vbrajon@gmail.com
+[core]
+        editor = vi
+        excludesfile = ~/.gitexcludes
+[color]
+        branch      = auto
+        diff        = auto
+        interactive = auto
+        status      = auto
+        ui          = auto
+[push]
+        default = current
+[alias]
+        clo = clone
+        ci  = commit
+        co  = checkout
+        st  = status
+        pur = pull --rebase
+        rc  = rebase --continue
+        lg  = log -M --decorate --graph --oneline
+        br  = branch
+        sth = stash
