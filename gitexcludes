@@ -1,0 +1,4 @@
+.nbproject # Sublime Text
+.idea # IntelliJ
+*.pyc
+*~

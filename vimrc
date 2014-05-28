@@ -1,3 +1,5 @@
+runtime! archlinux.vim
+
 syntax on
 colorscheme desert
 set mouse=a
