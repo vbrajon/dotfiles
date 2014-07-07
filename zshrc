@@ -1,4 +1,4 @@
-export PATH=$HOME/bin:/usr/local/bin:$PATH 
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 eval "$(fasd --init auto)"
 
 source ~/.zsh/antigen.zsh
@@ -11,4 +11,3 @@ antigen bundle zsh-users/zsh-syntax-highlighting
 antigen bundle zsh-users/zsh-history-substring-search
 #antigen bundle swirepe/alwaysontop
 antigen apply
-

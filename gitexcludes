@@ -1,4 +1,5 @@
-.nbproject # Sublime Text
-.idea # IntelliJ
+.vagrant/ # Vagrant
+.nbproject/ # Sublime Text
+.idea/ # IntelliJ
 *.pyc
 *~
