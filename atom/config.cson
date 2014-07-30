@@ -1,0 +1,15 @@
+'exception-reporting':
+  'userId': '5db25ee4-3462-a4ae-cb7a-6351ca0de507'
+'welcome':
+  'showOnStartup': false
+'metrics':
+  'userId': 'd33f0d1d5ae41506f2e03c29c19cb9d269ef4697'
+'core':
+  'ignoredNames': [
+    '.git'
+    '.idea'
+    '.vagrant'
+  ]
+'editor':
+  'fontSize': 24
+  'showIndentGuide': true

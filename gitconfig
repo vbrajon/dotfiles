@@ -27,3 +27,5 @@
   db = delete-branch
 [url "https://"]
   insteadOf = git://
+[merge]
+  tool = vimdiff

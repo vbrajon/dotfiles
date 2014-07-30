@@ -1,6 +1,8 @@
 export PATH=$HOME/bin:/usr/local/bin:$PATH
-eval "$(fasd --init auto)"
+export TERM=xterm-256color
+[ -n "$TMUX" ] && export TERM=screen-256color
 
+source ~/.z.sh
 source ~/.zsh/antigen.zsh
 source ~/.zsh/pure.zsh
 
