@@ -25,6 +25,7 @@
   br  = branch
   sth = stash
   db = delete-branch
+  force = !git commit --amend && git push --force
 [url "https://"]
   insteadOf = git://
 [merge]

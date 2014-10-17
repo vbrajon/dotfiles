@@ -13,3 +13,5 @@
 'editor':
   'fontSize': 24
   'showIndentGuide': true
+  'invisibles': {}
+  'softWrap': true
