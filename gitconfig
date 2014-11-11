@@ -4,28 +4,21 @@
 [core]
   editor = vim
   excludesfile = ~/.gitexcludes
-[color]
-  branch      = auto
-  diff        = auto
-  interactive = auto
-  status      = auto
-  ui          = auto
 [push]
   default = current
 [pull]
   default = current
 [alias]
-  clo = clone
+  st  = status
+  lg  = log -M --decorate --graph --oneline
   ci  = commit
   co  = checkout
-  st  = status
-  pur = pull --rebase
-  rc  = rebase --continue
-  lg  = log -M --decorate --graph --oneline
   br  = branch
-  sth = stash
-  db = delete-branch
-  force = !git commit --amend && git push --force
+  pur = pull --rebase
+  pr = !git push -u && hub pull-request
+  oops = !git add -p && git commit --amend && git push --force
+  force = !git commit --amend --no-edit && git push --force
+  wip = !git commit --all -m "[WIP]"
 [url "https://"]
   insteadOf = git://
 [merge]

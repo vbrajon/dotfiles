@@ -13,6 +13,8 @@ Plugin 'junegunn/goyo.vim'
 Plugin 'gcmt/breeze.vim'
 Plugin 'Lokaltog/vim-easymotion'
 " File Explorer - todo, find a nice finder + tree view
+Plugin 'scrooloose/nerdtree'
+Plugin 'jistr/vim-nerdtree-tabs'
 Plugin 'kien/ctrlp.vim'
 " Efficiency
 Plugin 'terryma/vim-multiple-cursors'

@@ -119,7 +119,7 @@ prompt_pure_setup() {
   zstyle ':vcs_info:git*' actionformats ' %b|%a'
 
   # show username@host if logged in through SSH
-  [[ "$SSH_CONNECTION" != '' ]] && prompt_pure_username='%n@%m '
+  [[ "$SSH_CONNECTION" != '' || $EUID -eq 0 ]] && prompt_pure_username='%n@%m '
 }
 
 prompt_pure_setup "$@"

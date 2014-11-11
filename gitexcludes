@@ -1,6 +1,10 @@
-.vagrant/ # Vagrant
-.nbproject/ # Sublime Text
-.idea/ # IntelliJ
+# Vagrant
+.vagrant/
+# Sublime Text
+.nbproject/
+# IntelliJ
+.idea/
+
 *.pyc
 *.log
 *~
