@@ -21,7 +21,7 @@ Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tpope/vim-surround'
 Plugin 'tomtom/tcomment_vim'
 " Snippet
-Plugin 'SirVer/ultisnips'
+" Plugin 'SirVer/ultisnips'
 " UI
 Plugin 'bling/vim-airline'
 Plugin 'airblade/vim-gitgutter'
@@ -41,7 +41,7 @@ if maparg('<C-L>', 'n') ==# ''
   nnoremap <silent> <C-L> :nohlsearch<CR><C-L>
 endif
 set iskeyword+=-
-set wildignore+=*/.git/*,*/.hg/*,*/.svn/* 
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*
 let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 
 " UI
@@ -148,4 +148,3 @@ set listchars=tab:>-,trail:·,eol:$
 nnoremap <silent> <leader>? :set nolist!<CR>
 
 set shortmess=atI
-
