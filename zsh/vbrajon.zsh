@@ -1,3 +1,10 @@
+if [[ ! -a "/usr/bin/open" ]]
+then
+function open() {
+   (nautilus $@ 1>&- 2>&- &)
+}
+fi
+
 function a() {
   z $@
   atom .
@@ -5,7 +12,7 @@ function a() {
 
 function o() {
   z $@
-  (nautilus . 1>&- 2>&- &)
+  open .
 }
 
 function m() {
