@@ -6,7 +6,8 @@ setopt interactivecomments
 source ~/.z.sh
 source ~/.zsh/antigen.zsh
 source ~/.zsh/pure.zsh
-source ~/.zsh/vbrajon.zsh
+source ~/.zsh/vbrajon-aliases.zsh
+source ~/.zsh/vbrajon-docker.zsh
 
 antigen use oh-my-zsh
 antigen bundle command-not-found

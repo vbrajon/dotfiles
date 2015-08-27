@@ -1,31 +1,3 @@
-if [[ ! -a "/usr/bin/open" ]]
-then
-function open() {
-   (nautilus $@ 1>&- 2>&- &)
-}
-fi
-
-function a() {
-  z $@
-  atom .
-}
-
-function o() {
-  z $@
-  open .
-}
-
-function m() {
-  z $@
-  meteor
-}
-
-alias v=vim
-alias vi=vim
-alias chrome=google-chrome-stable
-alias google-chrome=google-chrome-stable
-
-## Docker
 function docker-killall() {
   if [[ $(docker ps -a -q) != '' ]]
   then
