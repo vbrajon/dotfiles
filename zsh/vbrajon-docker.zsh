@@ -1,5 +1,5 @@
 function docker-machine-setup() {
-  docker-machine ip default || docker-machine start default || docker-machine create default -d virtualbox
+  docker-machine ip default || docker-machine start default || docker-machine create default -d virtualbox --virtualbox-cpu-count "2" -virtualbox-memory "2048"
   eval "$(docker-machine env default)"
 }
 
