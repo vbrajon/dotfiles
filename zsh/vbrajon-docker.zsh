@@ -1,3 +1,13 @@
+function docker-machine-setup() {
+  docker-machine ip default || docker-machine start default || docker-machine create default -d virtualbox
+  eval "$(docker-machine env default)"
+}
+
+function docker-go() {
+  ID=$(docker ps -f name=$@ -l -q)
+  docker exec -it $ID bash
+}
+
 function docker-killall() {
   if [[ $(docker ps -a -q) != '' ]]
   then
@@ -5,19 +15,14 @@ function docker-killall() {
   fi
 }
 
-function docker-rmi-untagged() {
+function docker-clean() {
   docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
 }
 
-function docker-up() {
-  docker-compose up -d $1
-}
-
-function docker-go() {
-  ID=$(docker ps -f name=$1 -l -q)
-  docker exec -it $ID bash
-}
-
-alias dgo=docker-go
-alias dup=docker-up
-alias dkill=docker-killall
+alias dm="docker-machine-setup"
+alias dps="docker ps"
+alias dgo="docker-go"
+alias dup="docker-compose up -d"
+alias dbuild="docker-compose build"
+alias dkill="docker-killall"
+alias dclean="docker-clean"
