@@ -7,7 +7,7 @@ ls ~/.z.sh || (curl https://raw.githubusercontent.com/rupa/z/master/z.sh > ~/.z.
 mkdir -p ~/.vim/tmp
 mkdir -p ~/.vim/bundle
 ls ~/.vim/bundle/Vundle.vim || git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-(vim +PluginInstall +qall 1>&- 2>&- &)
+#vim +PluginInstall +qall
 
 rm ~/.gitconfig
 rm ~/.gitexcludes
