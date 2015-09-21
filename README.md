@@ -14,7 +14,7 @@ chsh /bin/zsh $USER
 # Update gitconfig
 gitconfig --global -e
 # Install vim plugins
-(vim +PluginInstall +qall 1>&- 2>&- &)
+vim +PluginInstall +qall
 
 ## Note
 ## first time you run zsh, antigen will clone bundles
