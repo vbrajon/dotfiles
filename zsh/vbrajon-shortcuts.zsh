@@ -5,8 +5,15 @@ function open() {
 }
 fi
 
+function move() {
+if [ ! -z "$1" ]
+  then
+    z $@
+fi
+}
+
 function a() {
-  z $@
+  move $@
   atom .
 }
 
@@ -23,21 +30,11 @@ function t() {
 }
 
 function o() {
-  z $@
+  move $@
   open .
 }
 
 function m() {
-  z $@
+  move $@
   meteor
 }
-
-function p() {
-  z $@
-  (pstorm . 1>&- 2>&- &)
-}
-
-alias v=vim
-alias vi=vim
-
-PATH=$PATH:~/.go/bin

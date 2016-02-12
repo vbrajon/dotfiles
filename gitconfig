@@ -9,16 +9,18 @@
 [pull]
   default = current
 [alias]
-  st  = status
-  lg  = log -M --decorate --graph --oneline
-  ci  = commit
-  co  = checkout
-  br  = branch
+  st = status
+  lg = log -M --decorate --graph --oneline
+  ci = commit
+  co = checkout
+  br = branch
+  cp = cherry-pick
   pur = pull --rebase
   pr = !git push -u && hub pull-request
   oops = !git add -p && git commit --amend && git push --force
   force = !git commit --amend --no-edit && git push --force
   wip = !git commit --all -m "[WIP]"
+  bc = !git fetch -p && git branch -D $(git branch --merged) && git branch -a
 [url "https://"]
   insteadOf = git://
 [merge]

@@ -3,11 +3,9 @@ export TERM=xterm-256color
 [ -n "$TMUX" ] && export TERM=screen-256color
 setopt interactivecomments
 
-source ~/.z.sh
+source ~/.zsh/z.sh
 source ~/.zsh/antigen.zsh
 source ~/.zsh/pure.zsh
-source ~/.zsh/vbrajon-aliases.zsh
-source ~/.zsh/vbrajon-docker.zsh
 
 antigen use oh-my-zsh
 antigen bundle command-not-found
@@ -16,3 +14,9 @@ antigen bundle zsh-users/zsh-syntax-highlighting
 antigen bundle zsh-users/zsh-history-substring-search
 #antigen bundle swirepe/alwaysontop
 antigen apply
+
+for f in ~/.zsh/vbrajon-*.zsh
+do
+  source $f
+done
+

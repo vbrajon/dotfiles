@@ -1,28 +1,23 @@
-function docker-machine-setup() {
+alias d=docker
+alias dup='docker-compose up -d'
+
+function dm() {
   docker-machine ip default || docker-machine start default || docker-machine create default -d virtualbox --virtualbox-cpu-count "2" -virtualbox-memory "2048"
   eval "$(docker-machine env default)"
 }
 
-function docker-go() {
+function dgo() {
   ID=$(docker ps -f name=$@ -l -q)
   docker exec -it $ID bash
 }
 
-function docker-killall() {
+function dkill() {
   if [[ $(docker ps -a -q) != '' ]]
   then
     docker stop $(docker ps -a -q) && docker rm $(docker ps -a -q)
   fi
 }
 
-function docker-clean() {
+function dclean() {
   docker rmi $(docker images | grep "^<none>" | awk "{print $3}")
 }
-
-alias dm="docker-machine-setup"
-alias dps="docker ps"
-alias dgo="docker-go"
-alias dup="docker-compose up -d"
-alias dbuild="docker-compose build"
-alias dkill="docker-killall"
-alias dclean="docker-clean"
