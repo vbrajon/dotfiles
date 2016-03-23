@@ -1,28 +1,15 @@
 # dotfiles
 > command line productivity tools
 
-```
-git clone https://github.com/vbrajon/dotfiles ~/.dotfiles
-~/.dotfiles/init.sh
-```
+Install > `curl -L https://raw.githubusercontent.com/vbrajon/dotfiles/master/install.sh | bash`
 
-## Usefull commands
+## Useful commands
 
-```
-# Change shell
-chsh /bin/zsh $USER
-# Update gitconfig
-gitconfig --global -e
-# Install vim plugins
-vim +PluginInstall +qall
+1. Change shell > `chsh /bin/zsh $USER`
+2. Update gitconfig > `gitconfig --global -e`
+3. Install vim plugins > `vim +PluginInstall +qall`
 
 ## Note
-## first time you run zsh, antigen will clone bundles
-## first time you do cd, z will prompt a folder creation error
-```
 
-## Tools
-- git
-- tmux
-- vim
-- zsh
+The first time you run zsh, antigen will clone bundles
+The first time you do cd, z will prompt a folder creation error

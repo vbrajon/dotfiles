@@ -1,7 +1,7 @@
 if [[ ! -a "/usr/bin/open" ]]
 then
 function open() {
-   (nautilus $@ 1>&- 2>&- &)
+  (nautilus $@ 1>&- 2>&- &)
 }
 fi
 
