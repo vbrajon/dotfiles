@@ -23,7 +23,8 @@ Plugin 'tomtom/tcomment_vim'
 " Snippet
 " Plugin 'SirVer/ultisnips'
 " UI
-Plugin 'bling/vim-airline'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'flazz/vim-colorschemes'
 call vundle#end()
