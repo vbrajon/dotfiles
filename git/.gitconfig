@@ -9,9 +9,9 @@
 [pull]
   default = current
 [alias]
-  st = status
+  st = status -s
   lg = log -M --decorate --graph --oneline
-  ci = commit
+  c = commit -m
   co = checkout
   br = branch
   cp = cherry-pick
@@ -21,6 +21,7 @@
   force = !git commit --amend --no-edit && git push --force
   wip = !git commit --all -m "[WIP]"
   bc = !git fetch -p && git branch -D $(git branch --merged) && git branch -a
+  dirty = !git status --porcelain | sed -ne 's/^.[^ ] //p'
 [url "https://"]
   insteadOf = git://
 [merge]

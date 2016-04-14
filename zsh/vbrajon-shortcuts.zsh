@@ -1,15 +1,15 @@
 if [[ ! -a "/usr/bin/open" ]]
 then
 function open() {
-  (nautilus $@ 1>&- 2>&- &)
+  silent nautilus $@ &
 }
 fi
 
 function move() {
-if [ ! -z "$1" ]
+  if [ ! -z "$1" ]
   then
     z $@
-fi
+  fi
 }
 
 function a() {
@@ -30,8 +30,13 @@ function t() {
 }
 
 function o() {
-  move $@
-  open .
+  if [ -e "$1" ]
+  then
+    open $1
+  else
+    move $@
+    open .
+  fi
 }
 
 function m() {
