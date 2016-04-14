@@ -1,4 +1,4 @@
-function silent() {
+silent() {
   eval "$@" >/dev/null 2>&1
   return $?
 }
@@ -6,7 +6,7 @@ function silent() {
 if ! silent command -v open
 then
   # echo "no open, use nautilus"
-  function open() {
+  open() {
     silent nautilus $@ &
   }
 fi
@@ -20,7 +20,7 @@ fi
 # If the first argument is an existing file
 # Then execute "cmd arguments"
 # Else move "z arguments" and execute "cmd ."
-function zz {
+zz() {
   cmd=$1
   shift
   if [ -e "$1" ]
@@ -38,7 +38,7 @@ function zz {
 # t
 # If already in a tmux session, do nothing
 # Else create if needed a "yeah" session and join
-function t() {
+t() {
   [ ! -z "$TMUX" ] && return
   if ! silent tmux has-session -t yeah
   then
