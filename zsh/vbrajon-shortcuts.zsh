@@ -1,45 +1,65 @@
-if [[ ! -a "/usr/bin/open" ]]
-then
-function open() {
-  silent nautilus $@ &
+function silent() {
+  eval "$@" >/dev/null 2>&1
+  return $?
 }
+
+if ! silent command -v open
+then
+  # echo "no open, use nautilus"
+  function open() {
+    silent nautilus $@ &
+  }
 fi
 
-function move() {
-  if [ ! -z "$1" ]
+if silent command -v hub
+then
+  alias git=hub
+fi
+
+# zz cmd [arguments]
+# If the first argument is an existing file
+# Then execute "cmd arguments"
+# Else move "z arguments" and execute "cmd ."
+function zz {
+  cmd=$1
+  shift
+  if [ -e "$1" ]
   then
-    z $@
+    # echo "no z, exec $cmd $@"
+    eval "$cmd $@"
+  else
+    # echo "z, exec z $@ then $cmd"
+    silent z $@
+    eval "$cmd ."
   fi
 }
 
-function a() {
-  move $@
-  atom .
-}
 
+# t
+# If already in a tmux session, do nothing
+# Else create if needed a "yeah" session and join
 function t() {
-  if ! tmux has-session -t yeah
+  [ ! -z "$TMUX" ] && return
+  if ! silent tmux has-session -t yeah
   then
     tmux new-session -d -s yeah
-    tmux select-window -t yeah:1
+    tmux select-window -t 1
     tmux split-window -h
     tmux split-window -v
-    tmux send-keys 'htop' 'C-m'
+    tmux select-pane -t 1.2
+    tmux select-pane -t 1.1
+    tmux send-keys -t 1.2 'tmux clock-mode' Enter
+    tmux send-keys -t 1.3 'htop' Enter
   fi
   tmux attach-session -t yeah
 }
+# Run tmux
+t
 
-function o() {
-  if [ -e "$1" ]
-  then
-    open $1
-  else
-    move $@
-    open .
-  fi
-}
-
-function m() {
-  move $@
-  meteor
-}
+alias g=git
+alias v=vim
+alias vi=vim
+alias a='zz atom'
+alias o='zz open'
+alias m='zz meteor'
+alias dotfiles='curl -L https://raw.githubusercontent.com/vbrajon/dotfiles/master/install.sh | bash'
