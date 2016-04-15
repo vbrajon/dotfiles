@@ -62,4 +62,4 @@ alias vi=vim
 alias a='zz atom'
 alias o='zz open'
 alias m='zz meteor'
-alias dotfiles='curl -L https://raw.githubusercontent.com/vbrajon/dotfiles/master/install.sh | bash'
+alias dotfiles='bash <(curl -L https://raw.githubusercontent.com/vbrajon/dotfiles/master/install.sh)'
