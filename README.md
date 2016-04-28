@@ -1,7 +1,7 @@
 # dotfiles
 > command line productivity tools
 
-Install > `curl -L https://raw.githubusercontent.com/vbrajon/dotfiles/master/install.sh | bash`
+Install > `bash <(curl -L https://raw.githubusercontent.com/vbrajon/dotfiles/master/install.sh)`
 
 ## Useful commands
 
