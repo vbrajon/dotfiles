@@ -33,7 +33,7 @@ then
 fi
 
 echo "> Downloading dotfiles"
-pull git@github.com:vbrajon/dotfiles.git ~/.dotfiles
+pull https://github.com/vbrajon/dotfiles.git ~/.dotfiles
 
 echo "> Downloading antigen.zsh"
 curl -Ss -L https://raw.githubusercontent.com/zsh-users/antigen/master/antigen.zsh > ~/.antigen.zsh
