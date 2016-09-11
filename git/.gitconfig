@@ -12,6 +12,7 @@
   st = status -s
   lg = log -M --decorate --graph --oneline
   c = commit -m
+  # c = !"f() { git commit -m "$@"; }; f"
   co = checkout
   br = branch
   cp = cherry-pick
