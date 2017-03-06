@@ -44,6 +44,7 @@ mkdir -p ~/.vim/bundle
 pull https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 
 echo "> Creating symlinks"
+ln -sf ~/.dotfiles/.editorconfig ~/.editorconfig
 ln -sf ~/.dotfiles/git/.gitconfig ~/.gitconfig
 ln -sf ~/.dotfiles/git/.gitexcludes ~/.gitexcludes
 ln -sf ~/.dotfiles/tmux/.tmux.conf ~/.tmux.conf

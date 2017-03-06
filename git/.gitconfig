@@ -5,11 +5,11 @@
   editor = vim
   excludesfile = ~/.gitexcludes
 [push]
-  default = current
+  default = simple
 [pull]
   default = current
 [alias]
-  st = status -s
+  st = status --short --branch
   lg = log -M --decorate --graph --oneline
   c = commit -m
   # c = !"f() { git commit -m "$@"; }; f"

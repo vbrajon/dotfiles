@@ -26,9 +26,10 @@ zz() {
   then
     zpath=$1
     shift
+    echo "z $zpath"
+    silent z $zpath
   fi
-  # echo "z $zpath && $cmd ${@:-.}"
-  silent z $zpath
+  echo "$cmd ${@:-.}"
   eval "$cmd ${@:-.}"
 }
 
@@ -43,14 +44,14 @@ t() {
     tmux select-window -t 1
     tmux split-window -h
     tmux split-window -v
-    tmux split-window -v
-    tmux split-window -v
     tmux send-keys -t 1.2 'tmux clock-mode' Enter
     tmux send-keys -t 1.3 'htop' Enter
     tmux resize-pane -t 1.2 -U 1000
     tmux resize-pane -t 1.2 -R 1000
     tmux resize-pane -t 1.2 -L 50
     tmux resize-pane -t 1.2 -D 8
+    tmux select-pane -t 1.1
+    tmux split-window -v
     tmux select-pane -t 1.1
   fi
   tmux attach-session -t yeah
@@ -67,6 +68,11 @@ h() {
   fi
 }
 
+myip() {
+  ifconfig en0 | awk '$1 == "inet" {print $2}'
+  dig +short myip.opendns.com @resolver1.opendns.com
+}
+
 server() {
   re='^[0-9]+$'
   [[ $1 =~ $re ]] && port=$1 || port=8000
@@ -81,7 +87,7 @@ server() {
 alias g=git
 alias v=vim
 alias vi=vim
-alias a='zz atom'
+alias a='zz "atom -a"'
 alias o='zz open'
 alias m='zz meteor'
 alias s='zz server'
