@@ -36,7 +36,7 @@ echo "> Downloading dotfiles"
 pull https://github.com/vbrajon/dotfiles.git ~/.dotfiles
 
 echo "> Downloading antigen.zsh"
-curl -Ss -L https://raw.githubusercontent.com/zsh-users/antigen/master/antigen.zsh > ~/.antigen.zsh
+curl -Ss -L https://raw.githubusercontent.com/zsh-users/antigen/master/bin/antigen.zsh > ~/.antigen.zsh
 
 echo "> Downloading Vundle.vim"
 mkdir -p ~/.vim/tmp
