@@ -1,0 +1,83 @@
+#!/bin/bash
+
+# Shortcuts
+alias p=python
+alias n=node
+alias g=git
+alias v=vim
+alias vi=vim
+alias rm='trash'
+alias l='less +F'
+alias ll='ls -AF'
+alias la='ls -lhAF'
+alias a='zz "atom -a ."'
+alias o='zz "open ."'
+alias s='zz "http-server || python3 -m http.server"'
+alias d=docker
+alias dc=docker-compose
+alias dup='docker-compose up -d'
+dgo() { docker exec -it $(docker ps -f name=$@ -l -q) bash; }
+dkillall() { docker stop $(docker ps -aq) && docker rm $(docker ps -aq); }
+dcleanall() { docker rmi $(docker images -q) && docker volume rm $(docker volume ls -q); }
+
+# OS specific
+os() { [[ "$(uname)" == "Linux" ]] && echo "Linux" && return;[[ "$(uname)" == "Darwin" ]] && echo "Mac" && return;echo "Windows" && return; }
+[[ `os` == "Mac" ]] && ip() { ifconfig en0 | awk '$1 == "inet" {print $2}';dig +short myip.opendns.com @resolver1.opendns.com; }
+[[ `os` == "Mac" ]] && op() { cd "`osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)'`"; }
+[[ `os` == "Mac" ]] && alias up='brew upgrade && brew cask upgrade && brew cleanup && brew doctor'
+[[ `os` == "Linux" ]] && alias open=nautilus
+[[ `os` == "Windows" ]] && alias open=start
+
+# Functions
+h() { history -n;history -a;history | sort -k2 -k1nr | uniq -f1 | sort -n | cut -c8- > ~/.bash_history;history -c;history -r;[[ $# -eq 0 ]] && history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl | head && history | tail || history | grep $@; }
+r() { rsync -azvPh $1 $2; }
+silent() { eval "$@" &>/dev/null; }
+check() { silent command -v $@; }
+zz() { cmd=$1;shift;silent z $@;eval $cmd; }
+trash() { for i in $@;do mv $i /tmp/rm-$(realpath $i | sed s/\\//\|/g)-$(date '+%Y-%m-%dT%H:%M:%S');done; }
+extract () {
+if [[ -f $1 ]]
+then
+  case $1 in
+    *.tar.bz2) tar xvjf $1 && cd $(echo $1 | sed 's/.tar.bz2//') ;;
+    *.tar.gz)  tar xvzf $1 && cd $(echo $1 | sed 's/.tar.gz//') ;;
+    *.bz2)     bunzip2 $1 && cd $(echo $1 | sed 's/.bz2//') ;;
+    *.rar)     unrar x $1 && cd $(echo $1 | sed 's/.rar//') ;;
+    *.gz)      gunzip $1 && cd $(echo $1 | sed 's/.gz//') ;;
+    *.tar)     tar xvf $1 && cd $(echo $1 | sed 's/.tar//') ;;
+    *.tbz2)    tar xvjf $1 && cd $(echo $1 | sed 's/.tbz2//') ;;
+    *.tgz)     tar xvzf $1 && cd $(echo $1 | sed 's/.tgz//') ;;
+    *.zip)     unzip $1 && cd $(echo $1 | sed 's/.zip//') ;;
+    *.Z)       uncompress $1 && cd $(echo $1 | sed 's/.Z//') ;;
+    *.7z)      7z x $1 && cd $(echo $1 | sed 's/.7z//') ;;
+    *)         echo "don't know how to extract '$1'..." ;;
+  esac
+else
+  echo "'$1' is not a valid file!"
+fi
+}
+ssh_launch() {
+  check ssh || return
+  env=~/.ssh/agent.env
+  silent . "$env"
+  silent ssh-add -l
+  state=$? # 0: running  / 1: without key / 2: not-running
+  [[ $state = 2 ]] && umask 077 && ssh-agent > "$env" && silent . "$env"
+  [[ $state = 1 ]] || [[ $state = 2 ]] && silent ssh-add $(file ~/.ssh/* | grep "private key" | awk -F ': |, ' '{print $1}')
+  unset env
+}
+tmux_launch() {
+  check tmux || return
+  [[ -z "$TMUX" ]] || return
+  if ! silent tmux has-session -t tmux-1
+  then
+    tmux new-session -d -s tmux-1
+    tmux select-window -t 1
+    tmux split-window -h
+    tmux split-window -v
+    tmux select-pane -t 1.1
+    tmux split-window -v
+    tmux select-pane -t 1.1
+  fi
+  tmux attach-session -t tmux-1
+}

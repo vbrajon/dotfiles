@@ -1,0 +1,66 @@
+#!/bin/bash
+
+reset="\[\e[0m\]"
+red="\[\e[31m\]"
+green="\[\e[32m\]"
+yellow="\[\e[33m\]"
+blue="\[\e[34m\]"
+purple="\[\e[35m\]"
+cyan="\[\e[36m\]"
+
+prompt_git() {
+  local git_status="$(git status 2> /dev/null)"
+  if [[ $git_status ]]
+  then
+    local upstream=$(git rev-parse --symbolic-full-name --abbrev-ref @{upstream} 2> /dev/null)
+    local diff=$(git log --pretty=oneline --topo-order --left-right ${branch}...${upstream} 2> /dev/null)
+    local ahead=$(grep -c "^<" <<< "$diff")
+    local behind=$(grep -c "^>" <<< "$diff")
+    local stash=$(git stash list 2> /dev/null | wc -l)
+    local stats=$(git diff --shortstat 2> /dev/null)
+    local match_stats="([0-9]+) file[^,]*"
+    local match_branch="On branch ([^${IFS}]*)"
+    local match_commit="HEAD detached at ([^${IFS}]*)"
+    [[ $git_status =~ $match_branch ]] && local branch=${BASH_REMATCH[1]}
+    [[ $git_status =~ $match_commit ]] && local branch=${BASH_REMATCH[1]}
+    [[ $stats =~ $match_stats ]] && local changes=${BASH_REMATCH[1]}
+    local output=""
+    [[ $branch ]] && output+=" on \e[34m$branch\e[0m"
+    [[ $changes ]] || [[ $ahead -ne 0 ]] || [[ $behind -ne 0 ]] || [[ $stash -ne 0 ]] && output+=" \e[36m["
+    [[ $changes ]] && output+=≠
+    [[ $ahead -ne 0 ]] && output+=↑
+    [[ $behind -ne 0 ]] && output+=↓
+    [[ $stash -ne 0 ]] && output+=⚑
+    [[ $changes ]] || [[ $ahead -ne 0 ]] || [[ $behind -ne 0 ]] || [[ $stash -ne 0 ]] && output+="]\e[0m"
+    echo -e $output
+  fi
+}
+
+# Display last command status : ✓ or ✗
+# Display last command execution time
+# Display user & path
+# Display hostname if connected through SSH or root
+# Display current git info (branch, +-modified files, num of ahead/behind commit with remote) [TODO]
+
+HISTSIZE=
+HISTFILESIZE=
+HISTCONTROL=ignoredups:erasedups
+shopt -s histappend
+PATH=/usr/local/opt/coreutils/libexec/gnubin:$PATH
+timer() {
+  [[ -z $1 ]] && echo $(($(date +%s%N) / 1000000)) && return
+  diff=$(($(date +%s%N) / 1000000 - $1))
+  [[ $diff -lt 1000 ]] && echo ${diff}ms && return
+  [[ $diff -lt 60000 ]] && echo $((diff / 1000))s && return
+  [[ $diff -lt 3600000 ]] && echo $((diff / 60000))m$((diff / 1000 % 60))s && return
+  echo $((diff / 3600000))h$((diff / 60000 % 60))m && return
+}
+pre_timer() { [[ $flag_time ]] && unset flag_time && start_time=$(timer);history -a;history -c;history -r; }
+post_timer() { flag_time=1;(($?)) && status="\e[31m✗\e[0m" || status="\e[32m✓\e[0m";duration=" in \e[33m$(timer $start_time)\e[0m";[[ $start_time ]] && echo -e "$status$duration\n"; }
+trap 'pre_timer' DEBUG
+PROMPT_COMMAND='post_timer'
+
+PS1="$yellow\u$reset"
+[[ $USER == "root" || $SSH_TTY ]] && PS1+=" at $red\h$reset"
+PS1+=" in $green\w$reset"
+PS1+=" \$(prompt_git)\n$ "
