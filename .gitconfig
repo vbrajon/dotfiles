@@ -1,0 +1,35 @@
+[alias]
+  c = "!eval git commit -m \"'$@'\" #"
+  co = checkout
+  cl = !git clone --depth=1 https://github.com/$1.git || git clone --depth=1 https://gitlab.com/$1.git || git clone --depth=1 $1 --
+  pl = !git pull --rebase --autostash --no-edit
+  ps = !git pl && git push
+  st = !git status --short --branch && git diff --stat && git log -2 --pretty='%C(auto)%h %s'
+  lg = !git log --graph --oneline --color=always | fzf --ansi --no-sort --reverse --tiebreak=index
+  br = branch --all
+  bc = !git remote prune origin && git branch -vv | grep 'origin/.*: gone]' | awk '{print $1}' | xargs git branch -d
+  cp = cherry-pick
+  undo = reset origin --
+  oops = !git add -p && git commit --amend && git push --force-with-lease
+[core]
+  editor = vim
+  excludesfile = ~/.gitexcludes
+  hooksPath = ~/.githooks
+  symlink = true
+[fetch]
+  prune = true
+[help]
+  autocorrect = 1
+[pager]
+  diff = diff-so-fancy | less -RFX
+[pull]
+  default = current
+[push]
+  default = current
+  followTags = true
+[stash]
+  showPatch = true
+[url "https://"]
+  insteadOf = git://
+[include]
+  path = ~/.gitextra

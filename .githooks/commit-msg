@@ -1,0 +1,11 @@
+#!/bin/sh
+
+exec < /dev/tty
+
+message=$(cat $1)
+convention='^(feat|fix|refactor|design|doc|test|tools|release|revert)(\([a-z]+\))?!?: .{1,80}'
+[[ $message =~ $convention ]] || read -p $'\e[31m✗\e[0m conventional commit, continue anyway ? (y/n) ' yn
+[[ -z $yn ]] || [[ $yn =~ ^(Y|y|yes)$ ]] || exit
+echo $'\e[32m✓\e[0m conventional commit'
+
+exec <&-
