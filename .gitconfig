@@ -2,7 +2,7 @@
   c = "!eval git commit -m \"'$@'\" #"
   co = checkout
   cl = !git clone --depth=1 https://github.com/$1.git || git clone --depth=1 https://gitlab.com/$1.git || git clone --depth=1 $1 --
-  pl = !git pull --rebase --autostash --no-edit
+  pl = !git pull --rebase --autostash --no-edit --recurse-submodules
   ps = !git pl && git push
   st = !git status --short --branch && git diff --stat && git log -2 --pretty='%C(auto)%h %s'
   lg = !git log --graph --oneline --color=always | fzf --ansi --no-sort --reverse --tiebreak=index

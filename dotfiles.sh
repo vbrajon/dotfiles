@@ -84,6 +84,7 @@ EOL
   touch ~/.bash_sessions_disable
   defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
   defaults write com.apple.dashboard mcx-disabled -bool true
+  defaults write com.apple.desktopservices DSDontWriteNetworkStores true
   defaults write com.apple.dock autohide -bool true
   defaults write com.apple.dock autohide-delay -float 0
   defaults write com.apple.dock autohide-time-modifier -float 0
