@@ -56,7 +56,7 @@ timer() {
   echo $((diff / 3600000))h$((diff / 60000 % 60))m && return
 }
 pre_timer() { [[ $flag_time ]] && unset flag_time && start_time=$(timer);history -a;history -c;history -r; }
-post_timer() { flag_time=1;(($?)) && status="\e[31m✗\e[0m" || status="\e[32m✓\e[0m";duration=" in \e[33m$(timer $start_time)\e[0m";[[ $start_time ]] && echo -e "$status$duration\n"; }
+post_timer() { (($?)) && status="\e[31m✗\e[0m" || status="\e[32m✓\e[0m";flag_time=1;duration=" in \e[33m$(timer $start_time)\e[0m";[[ $start_time ]] && echo -e "$status$duration\n"; }
 trap 'pre_timer' DEBUG
 PROMPT_COMMAND='post_timer'
 
