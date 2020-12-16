@@ -41,7 +41,6 @@ prompt_git() {
 # Display user & path
 # Display hostname if connected through SSH or root
 # Display current git info (branch, +-modified files, num of ahead/behind commit with remote) [TODO]
-
 HISTSIZE=
 HISTFILESIZE=
 HISTCONTROL=ignoredups:erasedups
@@ -56,7 +55,7 @@ timer() {
   echo $((diff / 3600000))h$((diff / 60000 % 60))m && return
 }
 pre_timer() { [[ -z $flag_time ]] && return;unset flag_time;start_time=$(timer);history -a;history -c;history -r; }
-post_timer() { (($?)) && status="\e[31m✗\e[0m" || status="\e[32m✓\e[0m";duration=" in \e[33m$(timer $start_time)\e[0m";[[ $start_time ]] && echo -e "$status$duration\n";flag_time=1; }
+post_timer() { (($?)) && status="\e[31m✗\e[0m" || status="\e[32m✓\e[0m";duration=" in \e[33m$(timer $start_time)\e[0m at \e[33m$(date +%T)\e[0m";[[ $start_time ]] && echo -e "$status$duration\n";flag_time=1; }
 trap 'pre_timer' DEBUG
 PROMPT_COMMAND='post_timer'
 

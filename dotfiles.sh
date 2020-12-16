@@ -25,6 +25,7 @@ ls ~/.dotfiles &>/dev/null || {
   read -p "Programs: ($P) " PROGRAMS
   read -p "Packages - Node: ($N) " PACKAGES_NODE
   read -p "Packages - Atom: ($A) " PACKAGES_ATOM
+  read -p "Override Mac Preferences (Y/n)" MAC
   [[ $HOSTNAME ]] || HOSTNAME=$(hostname)
   [[ $TOOLS ]] || TOOLS=$T
   [[ $PROGRAMS ]] || PROGRAMS=$P
@@ -45,9 +46,6 @@ EOL
   email = $EMAIL
 EOL
   curl -s https://raw.githubusercontent.com/github/gitignore/master/Global/macOS.gitignore >> ~/.gitexcludes
-  curl -s https://raw.githubusercontent.com/github/gitignore/master/Rust.gitignore >> ~/.gitexcludes
-  curl -s https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore >> ~/.gitexcludes
-  curl -s https://raw.githubusercontent.com/github/gitignore/master/Python.gitignore >> ~/.gitexcludes
   curl -s https://raw.githubusercontent.com/rupa/z/master/z.sh > /usr/local/etc/profile.d/z.sh
 }
 
@@ -67,9 +65,8 @@ EOL
   defaults write com.apple.terminal "Default Window Settings" "Raw"
   defaults write com.apple.terminal "Startup Window Settings" "Raw"
 
-  log "> Configure Mac"
-  git config --global user.name "$NAME"
-  git config --global user.email "$EMAIL"
+  [[ "$MAC" != [Yy]* ]] && break
+  log "> Update Mac Preferences"
   osascript -e 'tell application "System Preferences" to quit'
   sudo -v;while true;do sudo -n true;sleep 60;kill -0 "$$" || exit;done 2>/dev/null &
   scutil --set HostName "$HOSTNAME"

@@ -24,6 +24,7 @@
   diff = diff-so-fancy | less -RFX
 [pull]
   default = current
+  ff = only
 [push]
   default = current
   followTags = true
