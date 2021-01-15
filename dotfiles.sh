@@ -56,7 +56,7 @@ EOL
   brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep
   brew install bash bash-completion@2 git tmux htop fzf fd ripgrep diff-so-fancy
   brew install $TOOLS
-  brew cask install $PROGRAMS
+  brew install --cask $PROGRAMS
   npm install -g $PACKAGES_NODE
   apm install $PACKAGES_ATOM
   echo /usr/local/bin/bash >> /etc/shells

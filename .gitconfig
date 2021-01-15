@@ -1,16 +1,17 @@
 [alias]
-  c = "!eval git commit -m \"'$@'\" #"
-  co = checkout
-  cl = !git clone --depth=1 https://github.com/$1.git || git clone --depth=1 https://gitlab.com/$1.git || git clone --depth=1 $1 --
-  pl = !git pull --rebase --autostash --no-edit --recurse-submodules
-  ps = !git pl && git push
-  st = !git status --short --branch && git diff --stat && git log -2 --pretty='%C(auto)%h %s'
-  lg = !git log --graph --oneline --color=always | fzf --ansi --no-sort --reverse --tiebreak=index
+  amend = !git add -p && git commit --amend && git push --force-with-lease
   br = branch --all
   bc = !git remote prune origin && git branch -vv | grep 'origin/.*: gone]' | awk '{print $1}' | xargs git branch -d
+  c = !eval git commit -m \\'$@\\' "#"
+  cl = !git clone --depth=1 https://github.com/$1.git || git clone --depth=1 https://gitlab.com/$1.git || git clone --depth=1 $1 "#"
+  co = checkout
   cp = cherry-pick
-  undo = reset origin --
-  oops = !git add -p && git commit --amend && git push --force-with-lease
+  hard = !git reset --hard $([[ $1 -ne 0 ]] && echo HEAD~)$1 "#"
+  lg = !git log --graph --oneline --color=always | fzf --ansi --no-sort --reverse --tiebreak=index
+  pl = !git pull --rebase --autostash --no-edit --recurse-submodules
+  ps = !git pl && git push
+  rename = !git checkout $1 && git branch -m $1 $2 && git push origin -u $2 && git push origin :$1 "#"
+  st = !git status --short --branch && git diff --stat && git log -4 --pretty='%C(auto)%h %s'
 [core]
   editor = vim
   excludesfile = ~/.gitexcludes
