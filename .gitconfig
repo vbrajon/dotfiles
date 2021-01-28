@@ -17,6 +17,7 @@
   excludesfile = ~/.gitexcludes
   hooksPath = ~/.githooks
   symlink = true
+  fileMode = false
 [fetch]
   prune = true
 [help]

@@ -54,8 +54,22 @@ timer() {
   [[ $diff -lt 3600000 ]] && echo $((diff / 60000))m$((diff / 1000 % 60))s && return
   echo $((diff / 3600000))h$((diff / 60000 % 60))m && return
 }
-pre_timer() { [[ -z $flag_time ]] && return;unset flag_time;start_time=$(timer);history -a;history -c;history -r; }
-post_timer() { (($?)) && status="\e[31m✗\e[0m" || status="\e[32m✓\e[0m";duration=" in \e[33m$(timer $start_time)\e[0m at \e[33m$(date +%T)\e[0m";[[ $start_time ]] && echo -e "$status$duration\n";flag_time=1; }
+pre_timer() {
+  [[ -z $flag_time ]] && return
+  unset flag_time
+  start_time=$(timer)
+  history -a
+  history -c
+  history -r
+}
+post_timer() {
+  (($?)) && status="\e[31m✗\e[0m" || status="\e[32m✓\e[0m"
+  duration=" in \e[33m$(timer $start_time)\e[0m at \e[33m$(date +%T)\e[0m"
+  [[ $start_time ]] && echo -e "$status$duration\n"
+  flag_time=1
+  _z --add "$(command pwd '$_Z_RESOLVE_SYMLINKS' 2>/dev/null)" 2>/dev/null
+}
+_Z_NO_PROMPT_COMMAND=1
 trap 'pre_timer' DEBUG
 PROMPT_COMMAND='post_timer'
 
