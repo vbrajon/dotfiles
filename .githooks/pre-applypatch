@@ -1,0 +1,4 @@
+#!/bin/sh
+DIR=`git rev-parse --absolute-git-dir`/hooks
+[[ -f $DIR/pre-applypatch ]] && $DIR/pre-applypatch "$@"
+exit 0
