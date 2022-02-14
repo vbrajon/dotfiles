@@ -45,10 +45,10 @@ HISTSIZE=
 HISTFILESIZE=
 HISTCONTROL=ignoredups:erasedups
 shopt -s histappend
-PATH=/usr/local/opt/coreutils/libexec/gnubin:$PATH
 timer() {
-  [[ -z $1 ]] && echo $(($(date +%s%N) / 1000000)) && return
-  diff=$(($(date +%s%N) / 1000000 - $1))
+  millisec=$(date +%s%3N)
+  [[ -z $1 ]] && echo $millisec && return
+  diff=$((millisec - $1))
   [[ $diff -lt 1000 ]] && echo ${diff}ms && return
   [[ $diff -lt 60000 ]] && echo $((diff / 1000))s && return
   [[ $diff -lt 3600000 ]] && echo $((diff / 60000))m$((diff / 1000 % 60))s && return
@@ -57,10 +57,10 @@ timer() {
 pre_timer() {
   [[ -z $flag_time ]] && return
   unset flag_time
-  start_time=$(timer)
   history -a
   history -c
   history -r
+  start_time=$(timer)
 }
 post_timer() {
   (($?)) && status="\e[31m✗\e[0m" || status="\e[32m✓\e[0m"

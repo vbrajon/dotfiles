@@ -3,7 +3,7 @@
 source ~/.bash_prompt
 source ~/.bash_shortcuts
 source ~/.extra
-source /usr/local/etc/profile.d/z.sh
+source ~/.z.sh
 [[ ! "$PATH" == */usr/local/opt/fzf/bin* ]] && PATH="${PATH:+${PATH}:}/usr/local/opt/fzf/bin"
 source /usr/local/opt/fzf/shell/completion.bash
 source /usr/local/opt/fzf/shell/key-bindings.bash

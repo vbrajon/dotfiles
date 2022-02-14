@@ -14,39 +14,26 @@ ls ~/.dotfiles &>/dev/null || {
 
 [[ -f ~/.extra ]] || {
   log "> Configure Dotfiles"
-  T="node"
-  P="atom brave-browser microsoft-office"
-  N="http-server prettier raw"
-  A="autocomplete-paths file-icons language-vue minimap minimap-cursorline pigments prettier-atom teletype"
   read -p "Name: ($NAME) " NAME
   read -p "Email: ($EMAIL) " EMAIL
   read -p "Hostname: ($HOSTNAME) " HOSTNAME
-  read -p "Tools: ($T) " TOOLS
-  read -p "Programs: ($P) " PROGRAMS
-  read -p "Packages - Node: ($N) " PACKAGES_NODE
-  read -p "Packages - Atom: ($A) " PACKAGES_ATOM
   read -p "Override Mac Preferences (Y/n)" MAC
   [[ $HOSTNAME ]] || HOSTNAME=$(hostname)
-  [[ $TOOLS ]] || TOOLS=$T
-  [[ $PROGRAMS ]] || PROGRAMS=$P
-  [[ $PACKAGES_NODE ]] || PACKAGES_NODE=$N
-  [[ $PACKAGES_ATOM ]] || PACKAGES_ATOM=$A
   cat > ~/.extra <<EOL
 NAME="$NAME"
 EMAIL="$EMAIL"
 HOSTNAME="$HOSTNAME"
-TOOLS="$TOOLS"
-PROGRAMS="$PROGRAMS"
-PACKAGES_NODE="$PACKAGES_NODE"
-PACKAGES_ATOM="$PACKAGES_ATOM"
 EOL
   cat > ~/.gitextra <<EOL
 [user]
   name = $NAME
   email = $EMAIL
 EOL
+  echo "# https://raw.githubusercontent.com/github/gitignore/master/Global/macOS.gitignore" >> ~/.gitexcludes
   curl -s https://raw.githubusercontent.com/github/gitignore/master/Global/macOS.gitignore >> ~/.gitexcludes
-  curl -s https://raw.githubusercontent.com/rupa/z/master/z.sh > /usr/local/etc/profile.d/z.sh
+  echo "# https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore" >> ~/.gitexcludes
+  curl -s https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore >> ~/.gitexcludes
+  curl -s https://raw.githubusercontent.com/rupa/z/master/z.sh > ~/.z.sh
 }
 
 [[ $(date -r ~/.extra "+%H%M") == "0000" ]] || {
@@ -55,10 +42,9 @@ EOL
   source ~/.dotfiles/.extra
   brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep
   brew install bash bash-completion@2 git tmux htop fzf fd ripgrep diff-so-fancy
-  brew install $TOOLS
-  brew install --cask $PROGRAMS
-  npm install -g $PACKAGES_NODE
-  apm install $PACKAGES_ATOM
+  brew tap homebrew/cask-fonts
+  brew install font-hack
+
   echo /usr/local/bin/bash >> /etc/shells
   chsh -s /usr/local/bin/bash
   open ~/.dotfiles/Raw.terminal
@@ -76,7 +62,7 @@ EOL
   /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
   chflags nohidden /Volumes
   chflags nohidden ~/Library
-  hash tmutil &> /dev/null && sudo tmutil disablelocal
+  hash tmutil &> /dev/null && tmutil disable
   nvram SystemAudioVolume=" "
   touch ~/.bash_sessions_disable
   defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
@@ -112,7 +98,7 @@ EOL
   defaults write NSGlobalDomain com.apple.springing.enabled -bool true
   defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
   defaults write NSGlobalDomain InitialKeyRepeat -int 10
-  defaults write NSGlobalDomain KeyRepeat -int 1
+  defaults write NSGlobalDomain KeyRepeat -int 5
   defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
   defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
   defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false

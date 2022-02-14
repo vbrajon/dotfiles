@@ -6,6 +6,7 @@
   cl = !git clone --depth=1 https://github.com/$1.git || git clone --depth=1 https://gitlab.com/$1.git || git clone --depth=1 $1 "#"
   co = checkout
   cp = cherry-pick
+  force = push --force-with-lease
   hard = !git reset --hard $([[ $1 -ne 0 ]] && echo HEAD~)$1 "#"
   lg = !git log --graph --oneline --color=always | fzf --ansi --no-sort --reverse --tiebreak=index
   pl = !git pull --rebase --autostash --no-edit --recurse-submodules

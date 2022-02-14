@@ -8,28 +8,26 @@ alias v=vim
 alias vi=vim
 alias rm=remove
 alias l='less +F'
-alias ll='ls -lhAF'
-alias c='zz "code -a ."'
-alias o='zz "open ."'
-alias s='zz "http-server -p80 --cors || python3 -m http.server 80"'
+alias ll='ls -lhAF --color=auto'
+alias c='code -a .'
+alias o='open .'
+alias s='http-server -p80 --ext --cors --gzip --brotli --proxy http://localhost:80? || python3 -m http.server 80'
 alias d=docker
-alias dc=docker-compose
-alias dup='docker-compose up -d'
+alias dc='docker compose'
 dgo() { docker exec -it $(docker ps -f name=$@ -l -q) bash; }
 dclean() { docker stop $(docker ps -aq);docker system prune -f;docker rmi -f $(docker images -aq); }
 
 # OS specific
 [[ "$(uname)" == "Darwin" ]] && ip() { ifconfig en0 | awk '$1 == "inet" {print $2}';dig +short myip.opendns.com @resolver1.opendns.com; }
 [[ "$(uname)" == "Darwin" ]] && op() { cd "`osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)'`"; }
-[[ "$(uname)" == "Darwin" ]] && alias up='brew upgrade && brew cask upgrade && brew cleanup && brew doctor'
+[[ "$(uname)" == "Darwin" ]] && alias up='xcode-select --install;brew upgrade;brew cleanup;brew doctor'
 
 # Functions
 check() { silent command -v $@; }
 h() { history -n;history -a;history | sort -k2 -k1nr | uniq -f1 | sort -n | cut -c8- > ~/.bash_history;history -c;history -r;[[ $# -eq 0 ]] && history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl | head && history | tail || history | grep $@; }
 r() { rsync -azvPh $1 $2; }
-remove() { now=$(date '+%Y-%m-%dT%H:%M:%S');mkdir -p /tmp/rm/$now;mv "$@" /tmp/rm/$now; }
+remove() { now=$(date +%s);mkdir -p /tmp/rm/$now;mv -- "$@" /tmp/rm/$now; }
 silent() { eval "$@" &>/dev/null; }
-zz() { cmd=$1;shift;silent z $@;eval $cmd; }
 ssh_launch() {
   check ssh || return
   env=~/.ssh/agent.env
