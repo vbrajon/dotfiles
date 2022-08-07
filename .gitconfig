@@ -4,7 +4,7 @@
   br = branch --all
   bc = !git remote prune origin && git branch -vv | grep 'origin/.*: gone]' | awk '{print $1}' | xargs git branch -d
   c = !eval git commit -m \\'$@\\' "#"
-  cl = !git clone --depth=1 https://github.com/$1.git || git clone --depth=1 https://gitlab.com/$1.git || git clone --depth=1 $1 "#"
+  cl = !git clone --depth=1 $1 || git clone --depth=1 https://github.com/$1.git || git clone --depth=1 https://gitlab.com/$1.git "#"
   co = checkout
   cp = cherry-pick
   force = push --force-with-lease
@@ -21,12 +21,13 @@
   hooksPath = ~/.githooks
   symlink = true
   fileMode = false
+  pager = delta --diff-so-fancy --navigate
+[diff]
+  colorMoved = default
 [fetch]
   prune = true
 [help]
   autocorrect = 1
-[pager]
-  diff = diff-so-fancy | less -RFX
 [pull]
   default = current
   ff = only

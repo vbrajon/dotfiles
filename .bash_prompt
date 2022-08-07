@@ -1,12 +1,17 @@
 #!/bin/bash
+# Display user & path
+# Display hostname if connected through SSH or root
+# Display current git info (branch, +-modified files, num of ahead/behind commit with remote) [TODO]
+# Display last command status: ✓ or ✗
+# Display last command execution time
 
-reset="\[\e[0m\]"
-red="\[\e[31m\]"
-green="\[\e[32m\]"
-yellow="\[\e[33m\]"
-blue="\[\e[34m\]"
-purple="\[\e[35m\]"
-cyan="\[\e[36m\]"
+reset="\e[0m"
+red="\e[31m"
+green="\e[32m"
+yellow="\e[33m"
+blue="\e[34m"
+purple="\e[35m"
+cyan="\e[36m"
 
 prompt_git() {
   local git_status="$(git status 2> /dev/null)"
@@ -25,22 +30,17 @@ prompt_git() {
     [[ $git_status =~ $match_commit ]] && local branch=${BASH_REMATCH[1]}
     [[ $stats =~ $match_stats ]] && local changes=${BASH_REMATCH[1]}
     local output=""
-    [[ $branch ]] && output+=" on \e[34m$branch\e[0m"
-    [[ $changes ]] || [[ $ahead -ne 0 ]] || [[ $behind -ne 0 ]] || [[ $stash -ne 0 ]] && output+=" \e[36m["
-    [[ $changes ]] && output+=≠
-    [[ $ahead -ne 0 ]] && output+=↑
-    [[ $behind -ne 0 ]] && output+=↓
-    [[ $stash -ne 0 ]] && output+=⚑
-    [[ $changes ]] || [[ $ahead -ne 0 ]] || [[ $behind -ne 0 ]] || [[ $stash -ne 0 ]] && output+="]\e[0m"
+    [[ $branch ]] && output+=" on $blue$branch"
+    output+=$cyan
+    [[ $ahead -ne 0 ]] && output+=" ↑"
+    [[ $behind -ne 0 ]] && output+=" ↓"
+    [[ $changes ]] && output+=" ${changes}≠"
+    [[ $stash -ne 0 ]] && output+=" ${stash}⚑"
+    output+=$reset
     echo -e $output
   fi
 }
 
-# Display last command status : ✓ or ✗
-# Display last command execution time
-# Display user & path
-# Display hostname if connected through SSH or root
-# Display current git info (branch, +-modified files, num of ahead/behind commit with remote) [TODO]
 HISTSIZE=
 HISTFILESIZE=
 HISTCONTROL=ignoredups:erasedups
@@ -63,15 +63,15 @@ pre_timer() {
   start_time=$(timer)
 }
 post_timer() {
-  (($?)) && status="\e[31m✗\e[0m" || status="\e[32m✓\e[0m"
-  duration=" in \e[33m$(timer $start_time)\e[0m at \e[33m$(date +%T)\e[0m"
+  (($?)) && status="${red}✗$reset" || status="${green}✓$reset"
+  duration=" in $yellow$(timer $start_time)$reset at $yellow$(date +%T)$reset"
   [[ $start_time ]] && echo -e "$status$duration\n"
   flag_time=1
-  _z --add "$(command pwd '$_Z_RESOLVE_SYMLINKS' 2>/dev/null)" 2>/dev/null
+  _z --add "$(command pwd $_Z_RESOLVE_SYMLINKS 2>/dev/null)" 2>/dev/null
 }
 _Z_NO_PROMPT_COMMAND=1
-trap 'pre_timer' DEBUG
-PROMPT_COMMAND='post_timer'
+trap pre_timer DEBUG
+PROMPT_COMMAND=post_timer
 
 PS1="$yellow\u$reset"
 [[ $USER == "root" || $SSH_TTY ]] && PS1+=" at $red\h$reset"

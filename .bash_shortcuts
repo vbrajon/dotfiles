@@ -6,36 +6,45 @@ alias n=node
 alias g=git
 alias v=vim
 alias vi=vim
-alias rm=remove
-alias l='less +F'
-alias ll='ls -lhAF --color=auto'
-alias c='code -a .'
-alias o='open .'
-alias s='http-server -p80 --ext --cors --gzip --brotli --proxy http://localhost:80? || python3 -m http.server 80'
+alias ll="ls --color=auto -lhAF"
+alias c="code -a ."
+alias o="open ."
+alias s="python3 -m http.server 80"
 alias d=docker
-alias dc='docker compose'
+alias dc="docker compose"
 dgo() { docker exec -it $(docker ps -f name=$@ -l -q) bash; }
 dclean() { docker stop $(docker ps -aq);docker system prune -f;docker rmi -f $(docker images -aq); }
+silent() { eval "$@" &>/dev/null; }
+check() { silent command -v $@; }
+check http-server && alias s="http-server -o -p80 --ext --cors --gzip --brotli --proxy http://localhost:80?"
+check bat && alias cat=bat
+check btop && alias htop=btop
+check btop && alias top=btop
+check duf && alias df=duf
+check dust && alias du=dust
+check exa && alias ls=exa
+check exa && alias ll="exa -lars modified"
+check fd && alias find=fd
+check rg && alias grep=rg
 
 # OS specific
 [[ "$(uname)" == "Darwin" ]] && ip() { ifconfig en0 | awk '$1 == "inet" {print $2}';dig +short myip.opendns.com @resolver1.opendns.com; }
 [[ "$(uname)" == "Darwin" ]] && op() { cd "`osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)'`"; }
-[[ "$(uname)" == "Darwin" ]] && alias up='xcode-select --install;brew upgrade;brew cleanup;brew doctor'
+[[ "$(uname)" == "Darwin" ]] && alias up="xcode-select --install;brew upgrade;brew cleanup;brew doctor"
+[[ "$(uname)" == "Darwin" ]] && rm() { osascript -e "tell application \"Finder\" to delete {$(realpath -s "$@" | sed 's/\(.*\)/POSIX file "\1"/' | paste -sd ',')}" &>/dev/null; }
+[[ "$(uname)" != "Darwin" ]] && alias rm='mv --force -t ~/.Trash --'
 
 # Functions
-check() { silent command -v $@; }
 h() { history -n;history -a;history | sort -k2 -k1nr | uniq -f1 | sort -n | cut -c8- > ~/.bash_history;history -c;history -r;[[ $# -eq 0 ]] && history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl | head && history | tail || history | grep $@; }
 r() { rsync -azvPh $1 $2; }
-remove() { now=$(date +%s);mkdir -p /tmp/rm/$now;mv -- "$@" /tmp/rm/$now; }
-silent() { eval "$@" &>/dev/null; }
 ssh_launch() {
   check ssh || return
   env=~/.ssh/agent.env
   silent . "$env"
   silent ssh-add -l
-  state=$? # 0: running  / 1: without key / 2: not-running
-  [[ $state = 2 ]] && umask 077 && ssh-agent > "$env" && silent . "$env"
-  [[ $state = 1 ]] || [[ $state = 2 ]] && silent ssh-add $(file ~/.ssh/* | grep "private key" | awk -F ': |, ' '{print $1}')
+  state=$? # 0: running / 1: without key / 2: not-running
+  [[ $state == 2 ]] && umask 077 && ssh-agent > "$env" && silent . "$env"
+  [[ $state != 0 ]] && silent ssh-add $(file ~/.ssh/* | grep "private key" | awk -F ': |, ' '{print $1}')
   unset env
 }
 tmux_launch() {
@@ -50,6 +59,7 @@ tmux_launch() {
     tmux select-pane -t 1.1
     tmux split-window -v
     tmux select-pane -t 1.1
+    tmux send-keys -t 1.4 top Enter
   fi
   tmux attach-session -t tmux-1
 }
