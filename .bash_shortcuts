@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Shortcuts
+alias -- -="cd -"
 alias p=python
 alias n=node
 alias g=git
@@ -12,7 +13,7 @@ alias o="open ."
 alias s="python3 -m http.server 80"
 alias d=docker
 alias dc="docker compose"
-dgo() { docker exec -it $(docker ps -f name=$@ -l -q) bash; }
+dgo() { name=$1;shift;docker exec -it $(docker ps -f name=$name -l -q) ${@-bash}; }
 dclean() { docker stop $(docker ps -aq);docker system prune -f;docker rmi -f $(docker images -aq); }
 silent() { eval "$@" &>/dev/null; }
 check() { silent command -v $@; }
@@ -28,7 +29,7 @@ check fd && alias find=fd
 check rg && alias grep=rg
 
 # OS specific
-[[ "$(uname)" == "Darwin" ]] && ip() { ifconfig en0 | awk '$1 == "inet" {print $2}';dig +short myip.opendns.com @resolver1.opendns.com; }
+[[ "$(uname)" == "Darwin" ]] && check ip || ip() { ifconfig en0 | awk '$1 == "inet" {print $2}';dig +short myip.opendns.com @resolver1.opendns.com; }
 [[ "$(uname)" == "Darwin" ]] && op() { cd "`osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)'`"; }
 [[ "$(uname)" == "Darwin" ]] && alias up="xcode-select --install;brew upgrade;brew cleanup;brew doctor"
 [[ "$(uname)" == "Darwin" ]] && rm() { osascript -e "tell application \"Finder\" to delete {$(realpath -s "$@" | sed 's/\(.*\)/POSIX file "\1"/' | paste -sd ',')}" &>/dev/null; }
@@ -37,6 +38,8 @@ check rg && alias grep=rg
 # Functions
 h() { history -n;history -a;history | sort -k2 -k1nr | uniq -f1 | sort -n | cut -c8- > ~/.bash_history;history -c;history -r;[[ $# -eq 0 ]] && history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl | head && history | tail || history | grep $@; }
 r() { rsync -azvPh $1 $2; }
+x() { eval ex +':execute "normal! $@"' '+:wq! /dev/stdout' /dev/stdin; }
+zz() { cmd=$1;shift;silent z $@;eval $cmd; }
 ssh_launch() {
   check ssh || return
   env=~/.ssh/agent.env
