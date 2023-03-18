@@ -1,12 +1,13 @@
 #!/bin/bash
 
-source ~/.bash_prompt
-source ~/.bash_shortcuts
-source ~/.extra
-source ~/.z.sh
-[[ ! "$PATH" == */usr/local/opt/fzf/bin* ]] && PATH="${PATH:+${PATH}:}/usr/local/opt/fzf/bin"
-source /usr/local/opt/fzf/shell/completion.bash
-source /usr/local/opt/fzf/shell/key-bindings.bash
-source $(pkg-config --variable=prefix bash-completion)/share/bash-completion/bash_completion
+. ~/.bash_prompt
+. ~/.bash_shortcuts
+. ~/.extra
+. ~/.z.sh
+eval $(/opt/homebrew/bin/brew shellenv)
+PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH:/opt/homebrew/opt/fzf/bin"
+. /opt/homebrew/opt/fzf/shell/completion.bash
+. /opt/homebrew/opt/fzf/shell/key-bindings.bash
+. /opt/homebrew/etc/profile.d/bash_completion.sh
 ssh_launch
 tmux_launch
