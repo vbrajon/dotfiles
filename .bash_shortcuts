@@ -53,6 +53,7 @@ ssh_launch() {
 tmux_launch() {
   check tmux || return
   [[ -z "$TMUX" ]] || return
+  [[ -z "$SSH_TTY" ]] || return
   if ! silent tmux has-session -t tmux-1
   then
     tmux new-session -d -s tmux-1
