@@ -2,6 +2,7 @@
 
 # Shortcuts
 alias -- -="cd -"
+alias -- ..="cd .."
 alias p=python
 alias n=node
 alias g=git
