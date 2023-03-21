@@ -4,8 +4,8 @@
 . ~/.bash_shortcuts
 . ~/.extra
 . ~/.z.sh
-[[ -d "/opt/homebrew" ]] && HOMEBREW_PREFIX="/opt/homebrew"
 [[ -d "/usr/local" ]] && HOMEBREW_PREFIX="/usr/local"
+[[ -d "/opt/homebrew" ]] && HOMEBREW_PREFIX="/opt/homebrew"
 eval $($HOMEBREW_PREFIX/bin/brew shellenv)
 PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH:$HOMEBREW_PREFIX/opt/fzf/bin"
 . $HOMEBREW_PREFIX/opt/fzf/shell/completion.bash
