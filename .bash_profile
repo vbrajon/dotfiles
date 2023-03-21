@@ -4,10 +4,12 @@
 . ~/.bash_shortcuts
 . ~/.extra
 . ~/.z.sh
-eval $(/opt/homebrew/bin/brew shellenv)
-PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH:/opt/homebrew/opt/fzf/bin"
-. /opt/homebrew/opt/fzf/shell/completion.bash
-. /opt/homebrew/opt/fzf/shell/key-bindings.bash
-. /opt/homebrew/etc/profile.d/bash_completion.sh
+[[ -d "/opt/homebrew" ]] && HOMEBREW_PREFIX="/opt/homebrew"
+[[ -d "/usr/local" ]] && HOMEBREW_PREFIX="/usr/local"
+eval $($HOMEBREW_PREFIX/bin/brew shellenv)
+PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH:$HOMEBREW_PREFIX/opt/fzf/bin"
+. $HOMEBREW_PREFIX/opt/fzf/shell/completion.bash
+. $HOMEBREW_PREFIX/opt/fzf/shell/key-bindings.bash
+. $HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh
 ssh_launch
 tmux_launch
