@@ -9,7 +9,7 @@ alias g=git
 alias v=vim
 alias vi=vim
 alias ll="ls --color=auto -lhAF"
-alias c="code -a ."
+alias c="code;code -a ." # reopen last workspace prior to adding current folder to it
 alias o="open ."
 alias s="python3 -m http.server 80"
 alias d=docker
@@ -38,7 +38,7 @@ check rg && alias grep=rg
 
 # Functions
 h() { history -n;history -a;history | sort -k2 -k1nr | uniq -f1 | sort -n | cut -c8- > ~/.bash_history;history -c;history -r;[[ $# -eq 0 ]] && history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl | head && history | tail || history | grep $@; }
-r() { rsync -azvPh $1 $2; }
+r() { rsync -azvPh "$@"; }
 x() { eval ex +':execute "normal! $@"' '+:wq! /dev/stdout' /dev/stdin; }
 zz() { cmd=$1;shift;silent z $@;eval $cmd; }
 ssh_launch() {
