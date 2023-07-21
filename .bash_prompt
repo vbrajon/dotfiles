@@ -14,6 +14,7 @@ purple="\e[35m"
 cyan="\e[36m"
 
 prompt_git() {
+  LANG=en_US
   local git_status="$(git status 2> /dev/null)"
   if [[ $git_status ]]
   then
