@@ -1,9 +1,9 @@
 [alias]
   alias = config --get-regexp alias
   amend = !git add -p && git commit --amend && git push --force-with-lease
+  bc = !git remote prune origin && git branch -vv | grep 'origin/.*: gone]' | awk '{print $1}' | xargs git branch -D
   br = branch --all
-  bc = !git remote prune origin && git branch -vv | grep 'origin/.*: gone]' | awk '{print $1}' | xargs git branch -d
-  c = !eval git commit -m \\'$@\\' "#"
+  c = !eval git commit -m \\'$@\\' && git push "#"
   cl = !git clone --depth=1 $1 || git clone --depth=1 https://github.com/$1.git || git clone --depth=1 https://gitlab.com/$1.git "#"
   co = checkout
   cp = cherry-pick

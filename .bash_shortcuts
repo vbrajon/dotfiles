@@ -3,30 +3,27 @@
 # Shortcuts
 alias -- -="cd -"
 alias -- ..="cd .."
-alias p=python
-alias n=node
-alias g=git
-alias v=vim
-alias vi=vim
-alias ll="ls --color=auto -lhAF"
 alias c="code;code -a ." # reopen last workspace prior to adding current folder to it
-alias o="open ."
-alias s="python3 -m http.server 80"
 alias d=docker
 alias dc="docker compose"
+alias g=git
+alias n=node
+alias o="open ."
+alias p=python
+alias s="python3 -m http.server 80"
+alias v=vim
+alias vi=vim
 dgo() { name=$1;shift;docker exec -it $(docker ps -f name=$name -l -q) ${@-bash}; }
 dclean() { docker stop $(docker ps -aq);docker system prune -f;docker rmi -f $(docker images -aq); }
 silent() { eval "$@" &>/dev/null; }
 check() { silent command -v $@; }
-check http-server && alias s="http-server -o -p80 --ext --cors --gzip --brotli --proxy http://localhost:80?"
 check bat && alias cat=bat
-check btop && alias htop=btop
-check btop && alias top=btop
+check btop && alias htop=btop && alias top=btop
 check duf && alias df=duf
 check dust && alias du=dust
-check exa && alias ls=exa
-check exa && alias ll="exa -lars modified"
+check exa && alias ls=exa && alias ll="exa -lars modified"
 check fd && alias find=fd
+check http-server && alias s="http-server -o -p80 --ext --cors --gzip --brotli --proxy http://localhost:80?"
 check rg && alias grep=rg
 
 # OS specific

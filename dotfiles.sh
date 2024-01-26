@@ -101,7 +101,7 @@ defaults write NSGlobalDomain com.apple.springing.delay -float 0
 defaults write NSGlobalDomain com.apple.springing.enabled -bool true
 defaults write NSGlobalDomain com.apple.swipescrolldirection -bool false
 defaults write NSGlobalDomain InitialKeyRepeat -int 10
-defaults write NSGlobalDomain KeyRepeat -int 4
+defaults write NSGlobalDomain KeyRepeat -int 2
 defaults write NSGlobalDomain NSAutomaticCapitalizationEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
