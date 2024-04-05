@@ -12,7 +12,6 @@ alias o="open ."
 alias p=python
 alias s="python3 -m http.server 80"
 alias v=vim
-alias vi=vim
 dgo() { name=$1;shift;docker exec -it $(docker ps -f name=$name -l -q) ${@-bash}; }
 dclean() { docker stop $(docker ps -aq);docker system prune -f;docker rmi -f $(docker images -aq); }
 silent() { eval "$@" &>/dev/null; }
@@ -21,9 +20,10 @@ check bat && alias cat=bat
 check btop && alias htop=btop && alias top=btop
 check duf && alias df=duf
 check dust && alias du=dust
-check exa && alias ls=exa && alias ll="exa -lars modified"
+check eza && alias ls=eza && alias ll="eza --long --header --icons --classify --almost-all --color-scale=all --sort=type --ignore-glob='node_modules|.git' --git --git-repos-no-status --octal-permissions --no-permissions --no-user"
 check fd && alias find=fd
 check http-server && alias s="http-server -o -p80 --ext --cors --gzip --brotli --proxy http://localhost:80?"
+check nvim && alias v=nvim && alias vi=nvim && alias vim=nvim
 check rg && alias grep=rg
 
 # OS specific

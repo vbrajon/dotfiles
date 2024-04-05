@@ -9,12 +9,12 @@
   cp = cherry-pick
   force = push --force-with-lease
   hard = !git reset --hard $([[ $1 -ne 0 ]] && echo HEAD~)$1 "#"
-  https = !git remote set-url origin $(git remote get-url origin | sed 's/^git@\\(.*\\):\\/*\\(.*\\).git/https:\\/\\/\\1\\/\\2.git/')
+  https = !git remote set-url origin $(git remote get-url origin | sed 's/^git@\\(.*\\):\\/*\\(.*\\)/https:\\/\\/\\1\\/\\2/')
   lg = !git log --graph --oneline --color=always | fzf --ansi --no-sort --reverse --tiebreak=index
   pl = !git pull --rebase --autostash --no-edit --recurse-submodules
   ps = !git pl && git push
   rename = !git checkout $1 && git branch -m $1 $2 && git push origin -u $2 && git push origin :$1 "#"
-  ssl = !git remote set-url origin $(git remote get-url origin | sed 's/^https:\\/\\/\\([^\\/]*\\)\\/\\(.*\\).git/git@\\1\\:\\2.git/')
+  ssl = !git remote set-url origin $(git remote get-url origin | sed 's/^https:\\/\\/\\([^\\/]*\\)\\/\\(.*\\)/git@\\1\\:\\2/')
   st = !git status --short --branch && git diff --stat && git log -4 --pretty='%C(auto)%h %s'
   track = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
 [core]

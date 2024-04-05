@@ -45,10 +45,10 @@ npm install -g http-server
 
 brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep
 brew install bash bash-completion@2 git git-delta tmux
-brew install bat btop duf dust exa fd fzf ripgrep
+brew install bat btop duf dust eza fd fzf ripgrep
 brew install httpie sampler
 brew tap homebrew/cask-fonts
-brew install font-hack
+brew install font-monaspace-nerd-font
 EOL
   vim ~/.extra-packages.sh
   bash ~/.extra-packages.sh
@@ -107,6 +107,7 @@ defaults write NSGlobalDomain NSAutomaticDashSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
+defaults write com.brave.Browser AppleEnableSwipeNavigateWithScrolls -bool FALSE
 EOL
   vim ~/.extra-preferences.sh
   bash ~/.extra-preferences.sh
