@@ -74,7 +74,9 @@ _Z_NO_PROMPT_COMMAND=1
 trap pre_timer DEBUG
 PROMPT_COMMAND=post_timer
 
-PS1="$yellow\u$reset"
-[[ $USER == "root" || $SSH_TTY ]] && PS1+=" at $red\h$reset"
+PS1=""
+[[ $USER == "root" || $SSH_TTY ]] && PS1+="$red\h$reset | "
+[[ "$(uname -m)" != "$(arch)" ]] && PS1+="$purple$(arch)$reset | "
+PS1+="$yellow\u$reset"
 PS1+=" in $green\w$reset"
 PS1+=" \$(prompt_git)\n$ "

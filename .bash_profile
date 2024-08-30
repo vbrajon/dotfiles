@@ -11,5 +11,5 @@ PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH:$HOMEBREW_PREFIX/opt/f
 . $HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh
 . ~/.z.sh
 . ~/.extra
-ssh_launch
-tmux_launch
+ssh-launch
+tmux-launch

@@ -17,14 +17,14 @@ dclean() { docker stop $(docker ps -aq);docker system prune -f;docker rmi -f $(d
 silent() { eval "$@" &>/dev/null; }
 check() { silent command -v $@; }
 check bat && alias cat=bat
-check btop && alias htop=btop && alias top=btop
+check btop && alias top=btop
 check duf && alias df=duf
 check dust && alias du=dust
 check eza && alias ls=eza && alias ll="eza --long --header --icons --classify --almost-all --color-scale=all --sort=type --ignore-glob='node_modules|.git' --git --git-repos-no-status --octal-permissions --no-permissions --no-user"
-check fd && alias find=fd
+# check fd && alias find=fd
 check http-server && alias s="http-server -o -p80 --ext --cors --gzip --brotli --proxy http://localhost:80?"
 check nvim && alias v=nvim && alias vi=nvim && alias vim=nvim
-check rg && alias grep=rg
+# check rg && alias grep=rg
 
 # OS specific
 [[ "$(uname)" == "Darwin" ]] && check ip || ip() { ifconfig en0 | awk '$1 == "inet" {print $2}';dig +short myip.opendns.com @resolver1.opendns.com; }
@@ -36,9 +36,8 @@ check rg && alias grep=rg
 # Functions
 h() { history -n;history -a;history | sort -k2 -k1nr | uniq -f1 | sort -n | cut -c8- > ~/.bash_history;history -c;history -r;[[ $# -eq 0 ]] && history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl | head && history | tail || history | grep $@; }
 r() { rsync -azvPh "$@"; }
-x() { eval ex +':execute "normal! $@"' '+:wq! /dev/stdout' /dev/stdin; }
 zz() { cmd=$1;shift;silent z $@;eval $cmd; }
-ssh_launch() {
+ssh-launch() {
   check ssh || return
   env=~/.ssh/agent.env
   silent . "$env"
@@ -48,7 +47,7 @@ ssh_launch() {
   [[ $state != 0 ]] && silent ssh-add $(file ~/.ssh/* | grep "private key" | awk -F ': |, ' '{print $1}')
   unset env
 }
-tmux_launch() {
+tmux-launch() {
   check tmux || return
   [[ -z "$TMUX" ]] || return
   [[ -z "$SSH_TTY" ]] || return
@@ -61,7 +60,7 @@ tmux_launch() {
     tmux select-pane -t 1.1
     tmux split-window -v
     tmux select-pane -t 1.1
-    tmux send-keys -t 1.4 top Enter
+    # tmux send-keys -t 1.4 top Enter
   fi
   tmux attach-session -t tmux-1
 }
