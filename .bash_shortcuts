@@ -16,6 +16,7 @@ dgo() { name=$1;shift;docker exec -it $(docker ps -f name=$name -l -q) ${@-bash}
 dclean() { docker stop $(docker ps -aq);docker system prune -f;docker rmi -f $(docker images -aq); }
 silent() { eval "$@" &>/dev/null; }
 check() { silent command -v $@; }
+export BAT_THEME="TwoDark"
 check bat && alias cat=bat
 check btop && alias top=btop
 check duf && alias df=duf
@@ -30,7 +31,7 @@ check nvim && alias v=nvim && alias vi=nvim && alias vim=nvim
 [[ "$(uname)" == "Darwin" ]] && check ip || ip() { ifconfig en0 | awk '$1 == "inet" {print $2}';dig +short myip.opendns.com @resolver1.opendns.com; }
 [[ "$(uname)" == "Darwin" ]] && op() { cd "`osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)'`"; }
 [[ "$(uname)" == "Darwin" ]] && alias up="xcode-select --install;brew upgrade;brew cleanup;brew doctor"
-[[ "$(uname)" == "Darwin" ]] && rm() { osascript -e "tell application \"Finder\" to delete {$(realpath -s "$@" | sed 's/\(.*\)/POSIX file "\1"/' | paste -sd ',')}" &>/dev/null; }
+[[ "$(uname)" == "Darwin" ]] && rm() { osascript -e "tell application \"Finder\" to delete {$(echo "$@" | sed 's/-[^ ]* //g' | xargs realpath -s | sed 's/\(.*\)/POSIX file "\1"/' | paste -sd ',')}" &>/dev/null; }
 [[ "$(uname)" != "Darwin" ]] && alias rm='mv --force -t ~/.Trash --'
 
 # Functions
