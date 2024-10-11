@@ -56,6 +56,7 @@ timer() {
   echo $((diff / 3600000))h$((diff / 60000 % 60))m && return
 }
 pre_timer() {
+  c2=$c1;c1=$BASH_COMMAND
   [[ -z $flag_time ]] && return
   unset flag_time
   history -a
@@ -66,7 +67,7 @@ pre_timer() {
 post_timer() {
   (($?)) && status="${red}✗$reset" || status="${green}✓$reset"
   duration=" in $yellow$(timer $start_time)$reset at $yellow$(date +%T)$reset"
-  [[ $start_time ]] && echo -e "$status$duration\n"
+  [[ $start_time && $c2 != "clear" ]] && echo -e "$status$duration\n"
   flag_time=1
   _z --add "$(command pwd $_Z_RESOLVE_SYMLINKS 2>/dev/null)" 2>/dev/null
 }

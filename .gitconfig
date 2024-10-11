@@ -30,6 +30,8 @@
   prune = true
 [help]
   autocorrect = 1
+[init]
+  defaultBranch = main
 [interactive]
   diffFilter = delta --color-only
 [pull]
