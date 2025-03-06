@@ -1,4 +1,5 @@
 [alias]
+  a = add -p
   alias = config --get-regexp alias
   amend = !git add -p && git commit --amend --no-edit && git push --force-with-lease
   bc = !git remote prune origin && git branch -vv | grep 'origin/.*: gone]' | awk '{print $1}' | xargs git branch -D
@@ -11,6 +12,7 @@
   hard = !git reset --hard $([[ $1 -ne 0 ]] && echo HEAD~)$1 "#"
   https = !git remote set-url origin $(git remote get-url origin | sed 's/^git@\\(.*\\):\\/*\\(.*\\)/https:\\/\\/\\1\\/\\2/')
   lg = !git log --graph --abbrev-commit --pretty='%C(auto)%h %C(blue)%ad %C(green)%an %C(auto)%s' --date=human --color=always | fzf --ansi --no-sort --reverse --tiebreak=index
+  o = !git remote -v | grep fetch | awk '{print $2}' | sed 's/.*git@\\(.*\\):\\(.*\\)/https:\\/\\/\\1\\/\\2/' | xargs open
   pl = !git pull --rebase --autostash --no-edit --recurse-submodules
   ps = !git pl && git push
   rename = !git checkout $1 && git branch -m $1 $2 && git push origin -u $2 && git push origin :$1 "#"

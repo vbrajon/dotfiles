@@ -43,7 +43,7 @@ EOL
 brew install node brave-browser visual-studio-code microsoft-office
 npm install -g http-server
 
-brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep
+brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep rsync
 brew install bash bash-completion@2 git git-delta tmux
 brew install bat btop duf dust eza fd fzf ripgrep
 brew install httpie sampler
