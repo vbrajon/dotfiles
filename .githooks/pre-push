@@ -5,7 +5,7 @@ DIR=`git rev-parse --absolute-git-dir`/hooks
 exec < /dev/tty
 
 branch=$(git rev-parse --abbrev-ref HEAD)
-convention='^([a-z]|[a-z]{3}\/[a-z0-9-]){1,80}$'
+convention='^([a-z]{3}/)?[a-z0-9-]{1,80}$'
 ok=$'\e[32m✓\e[0m valid branch name'
 ko=$'\e[31m✗\e[0m invalid branch name, continue anyway ? (Y/n) '
 [[ $branch =~ $convention ]] && echo $ok || read -p "$ko" yn
