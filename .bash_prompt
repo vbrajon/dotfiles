@@ -14,28 +14,22 @@ purple="\e[35m"
 cyan="\e[36m"
 
 prompt_git() {
-  LANG=en_US
-  local git_status="$(git status 2> /dev/null)"
-  if [[ $git_status ]]
+  branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
+  if [[ $branch ]]
   then
-    local upstream=$(git rev-parse --symbolic-full-name --abbrev-ref @{upstream} 2> /dev/null)
-    local diff=$(git log --pretty=oneline --topo-order --left-right ${branch}...${upstream} 2> /dev/null)
-    local ahead=$(grep -c "^<" <<< "$diff")
-    local behind=$(grep -c "^>" <<< "$diff")
-    local stash=$(git stash list 2> /dev/null | wc -l)
-    local stats=$(git diff --shortstat 2> /dev/null)
-    local match_stats="([0-9]+) file[^,]*"
-    local match_branch="On branch ([^${IFS}]*)"
-    local match_commit="HEAD detached at ([^${IFS}]*)"
-    [[ $git_status =~ $match_branch ]] && local branch=${BASH_REMATCH[1]}
-    [[ $git_status =~ $match_commit ]] && local branch=${BASH_REMATCH[1]}
-    [[ $stats =~ $match_stats ]] && local changes=${BASH_REMATCH[1]}
-    local output=""
+    [[ $branch == "HEAD" ]] && branch=$(git rev-parse --short HEAD)
+    upstream=$(git rev-parse --symbolic-full-name --abbrev-ref @{upstream} 2> /dev/null)
+    changes=$(timeout 0.1 sh -c "git status --porcelain | wc -l" || echo ?)
+    stash=$(git stash list | wc -l)
+    diff=$(git log --pretty=oneline --topo-order --left-right $branch...$upstream)
+    ahead=$(grep -c "^<" <<< "$diff")
+    behind=$(grep -c "^>" <<< "$diff")
+    output=""
     [[ $branch ]] && output+=" on $blue$branch"
     output+=$cyan
     [[ $ahead -ne 0 ]] && output+=" ↑"
     [[ $behind -ne 0 ]] && output+=" ↓"
-    [[ $changes ]] && output+=" ${changes}≠"
+    [[ $changes != "0" ]] && output+=" ${changes}≠"
     [[ $stash -ne 0 ]] && output+=" ${stash}⚑"
     output+=$reset
     echo -e $output
