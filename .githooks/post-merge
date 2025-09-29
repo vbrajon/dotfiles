@@ -1,0 +1,7 @@
+#!/bin/sh
+
+git lfs post-merge "$@"
+
+DIR=$(git rev-parse --absolute-git-dir)/hooks
+[ -f "$DIR/post-merge" ] && "$DIR/post-merge" "$@"
+exit 0

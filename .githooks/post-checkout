@@ -1,0 +1,7 @@
+#!/bin/sh
+
+git lfs post-checkout "$@"
+
+DIR=$(git rev-parse --absolute-git-dir)/hooks
+[ -f "$DIR/post-checkout" ] && "$DIR/post-checkout" "$@"
+exit 0

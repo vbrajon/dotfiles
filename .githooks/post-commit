@@ -1,0 +1,7 @@
+#!/bin/sh
+
+git lfs post-commit "$@"
+
+DIR=$(git rev-parse --absolute-git-dir)/hooks
+[ -f "$DIR/post-commit" ] && "$DIR/post-commit" "$@"
+exit 0

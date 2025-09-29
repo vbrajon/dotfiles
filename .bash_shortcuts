@@ -66,3 +66,8 @@ tmux-launch() {
   fi
   tmux attach-session -t tmux-1
 }
+ai() {
+  api_key=$(security find-generic-password -s "xAIkey" -a "cli" -w 2>/dev/null || { read -sp "xAI API key: " api_key && echo && [[ -n "$api_key" ]] && security add-generic-password -s "xAIkey" -a "cli" -w "$api_key" && echo "$api_key"; })
+  command=$(curl -s https://api.x.ai/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $api_key" -d '{ "messages": [{"role": "user", "content": "Respond only with one bash command on Mac, executable as is: '"$*"'" }], "model": "grok-4-fast-non-reasoning" }' | jq ".choices[0].message.content")
+  read -rp "Execute: $command ? [Y/n] " yn && [[ $yn != [nN] ]] && eval "$command"
+}

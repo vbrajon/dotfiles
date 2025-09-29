@@ -1,4 +1,0 @@
-#!/bin/sh
-DIR=`git rev-parse --absolute-git-dir`/hooks
-[[ -f $DIR/post-update ]] && $DIR/post-update "$@"
-exit 0

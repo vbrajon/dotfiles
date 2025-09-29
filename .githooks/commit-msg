@@ -1,6 +1,7 @@
 #!/bin/sh
-DIR=`git rev-parse --absolute-git-dir`/hooks
-[[ -f $DIR/commit-msg ]] && $DIR/commit-msg "$@"
+
+DIR=$(git rev-parse --absolute-git-dir)/hooks
+[ -f "$DIR/commit-msg" ] && "$DIR/commit-msg" "$@"
 
 exec < /dev/tty
 

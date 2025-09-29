@@ -5,13 +5,13 @@
 ## Installation
 
 ```bash
-bash <(curl -SsL https://vbrajon.github.io/dotfiles/dotfiles.sh)
+curl -fsSL https://vbrajon.github.io/dotfiles/dotfiles.sh | bash
 ```
 
 ⚠️ Windows experimental install, command to run in **powershell** as **ADMIN**
 
 ```bash
-iex ((New-Object System.Net.WebClient).DownloadString('https://vbrajon.github.io/dotfiles/dotfiles.ps1'))
+powershell -c "irm https://vbrajon.github.io/dotfiles/dotfiles.ps1 | iex"
 ```
 
 📦 On a server, you may want to install only bash prompt and shortcuts

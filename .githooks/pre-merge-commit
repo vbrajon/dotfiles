@@ -1,4 +1,0 @@
-#!/bin/sh
-DIR=`git rev-parse --absolute-git-dir`/hooks
-[[ -f $DIR/pre-merge-commit ]] && $DIR/pre-merge-commit "$@"
-exit 0

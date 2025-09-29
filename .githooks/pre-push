@@ -1,6 +1,9 @@
 #!/bin/sh
-DIR=`git rev-parse --absolute-git-dir`/hooks
-[[ -f $DIR/pre-push ]] && $DIR/pre-push "$@"
+
+git lfs pre-push "$@"
+
+DIR=$(git rev-parse --absolute-git-dir)/hooks
+[ -f "$DIR/pre-push" ] && "$DIR/pre-push" "$@"
 
 exec < /dev/tty
 

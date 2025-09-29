@@ -17,11 +17,11 @@ prompt_git() {
   branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
   if [[ $branch ]]
   then
-    [[ $branch == "HEAD" ]] && branch=$(git rev-parse --short HEAD)
+    [[ $branch == "HEAD" ]] && branch=$(git rev-parse --short HEAD 2> /dev/null || echo "main")
     upstream=$(git rev-parse --symbolic-full-name --abbrev-ref @{upstream} 2> /dev/null)
-    changes=$(timeout 0.1 sh -c "git status --porcelain | wc -l" || echo ?)
-    stash=$(git stash list | wc -l)
-    diff=$(git log --pretty=oneline --topo-order --left-right $branch...$upstream)
+    changes=$(timeout 0.1 sh -c "git status --porcelain 2> /dev/null | wc -l" || echo ?)
+    stash=$(git stash list 2> /dev/null | wc -l)
+    diff=$(git log --pretty=oneline --topo-order --left-right $branch...$upstream 2> /dev/null)
     ahead=$(grep -c "^<" <<< "$diff")
     behind=$(grep -c "^>" <<< "$diff")
     output=""
