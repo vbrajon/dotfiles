@@ -13,10 +13,10 @@ alias p=python
 alias s="python3 -m http.server 80"
 alias v=vim
 t() { tmux list-panes -F "#P" | xargs -I {} tmux send-keys -t {} "${*:-:};clear" Enter; }
-dgo() { name=$1;shift;docker exec -it $(docker ps -f name=$name -l -q) ${@-bash}; }
-dclean() { docker stop $(docker ps -aq);docker system prune -f;docker rmi -f $(docker images -aq); }
-silent() { eval "$@" &>/dev/null; }
-check() { silent command -v $@; }
+dgo() { name=$1;shift;docker exec -it "$(docker ps -f name="$name" -l -q)" "${@-bash}"; }
+dclean() { docker stop "$(docker ps -aq)";docker system prune -f;docker rmi -f "$(docker images -aq)"; }
+silent() { eval "$*" &>/dev/null; }
+check() { silent command -v "$@"; }
 export BAT_THEME="TwoDark"
 check bat && alias cat=bat
 check btop && alias top=btop
@@ -30,15 +30,15 @@ check nvim && alias v=nvim && alias vi=nvim && alias vim=nvim
 
 # OS specific
 [[ "$(uname)" == "Darwin" ]] && check ip || ip() { ifconfig en0 | awk '$1 == "inet" {print $2}';dig +short myip.opendns.com @resolver1.opendns.com; }
-[[ "$(uname)" == "Darwin" ]] && op() { cd "`osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)'`"; }
+[[ "$(uname)" == "Darwin" ]] && op() { cd "$(osascript -e 'tell app "Finder" to POSIX path of (insertion location as alias)')" || exit; }
 [[ "$(uname)" == "Darwin" ]] && alias up="xcode-select --install;brew upgrade;brew cleanup;brew doctor"
 [[ "$(uname)" == "Darwin" ]] && rm() { osascript -e "tell application \"Finder\" to delete {$(printf "%s\n" "$@" | xargs -I{} sh -c '[ -e "{}" ] && realpath -s "{}"' | sed 's/\(.*\)/POSIX file "\1"/' | paste -sd ',')}" &>/dev/null; }
 [[ "$(uname)" != "Darwin" ]] && alias rm='mv --force -t ~/.Trash --'
 
 # Functions
-h() { history -n;history -a;history | sort -k2 -k1nr | uniq -f1 | sort -n | cut -c8- > ~/.bash_history;history -c;history -r;[[ $# -eq 0 ]] && history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl | head && history | tail || history | grep $@; }
+h() { history -n;history -a;history | sort -k2 -k1nr | uniq -f1 | sort -n | cut -c8- > ~/.bash_history;history -c;history -r;[[ $# -eq 0 ]] && history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl | head && history | tail || history | grep "$@"; }
 r() { rsync -azvPh "$@"; }
-zz() { cmd=$1;shift;silent z $@;eval $cmd; }
+zz() { cmd=$1;shift;silent z "$@";eval "$cmd"; }
 ssh-launch() {
   check ssh || return
   env=~/.ssh/agent.env
@@ -46,7 +46,7 @@ ssh-launch() {
   silent ssh-add -l
   state=$? # 0: running / 1: without key / 2: not-running
   [[ $state == 2 ]] && umask 077 && ssh-agent > "$env" && silent . "$env"
-  [[ $state != 0 ]] && silent ssh-add $(file ~/.ssh/* | grep "private key" | awk -F ': |, ' '{print $1}')
+  [[ $state != 0 ]] && silent ssh-add "$(file ~/.ssh/* | grep "private key" | awk -F ': |, ' '{print $1}')"
   unset env
 }
 tmux-launch() {
@@ -67,7 +67,7 @@ tmux-launch() {
   tmux attach-session -t tmux-1
 }
 ai() {
-  api_key=$(security find-generic-password -s "xAIkey" -a "cli" -w 2>/dev/null || { read -sp "xAI API key: " api_key && echo && [[ -n "$api_key" ]] && security add-generic-password -s "xAIkey" -a "cli" -w "$api_key" && echo "$api_key"; })
-  command=$(curl -s https://api.x.ai/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $api_key" -d '{ "messages": [{"role": "user", "content": "Respond only with one bash command on Mac, executable as is: '"$*"'" }], "model": "grok-4-fast-non-reasoning" }' | jq ".choices[0].message.content")
-  read -rp "Execute: $command ? [Y/n] " yn && [[ $yn != [nN] ]] && eval "$command"
+  api_key=$(security find-generic-password -s "xAIkey" -a "cli" -w 2>/dev/null || { read -rsp "xAI API key: " api_key && echo && [[ -n "$api_key" ]] && security add-generic-password -s "xAIkey" -a "cli" -w "$api_key" && echo "$api_key"; })
+  command=$(curl -s https://api.x.ai/v1/chat/completions -H "Content-Type: application/json" -H "Authorization: Bearer $api_key" -d '{ "messages": [{"role": "user", "content": "Respond only with one bash command on Mac, executable as is: '"$*"'" }], "model": "grok-4-fast-non-reasoning" }' | jq -r ".choices[0].message.content")
+  read -rp "Execute: $command ? [Y/n] " yn && [[ $yn != [nN] ]] && eval "$command" && history -s "$command"
 }

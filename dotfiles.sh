@@ -1,16 +1,20 @@
-log() { echo -e $yellow$@$reset; }
+#!/bin/bash
+
+sudo -n true || sudo -v # while true; do sleep 60; sudo -n true; kill -0 "$$" || exit; done 2>/dev/null &
+
+log() { echo -e "\033[1;33m$*\033[0m"; }
 
 which brew &>/dev/null || {
   log "> Install Package Manager"
   xcode-select --install
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  eval $(/opt/homebrew/bin/brew shellenv)
+  eval "$(/opt/homebrew/bin/brew shellenv)"
 }
 
 ls ~/.dotfiles &>/dev/null || {
   log "> Install Dotfiles"
   git clone https://github.com/vbrajon/dotfiles.git ~/.dotfiles
-  for f in $(ls -d ~/.dotfiles/.* | grep -v '\.$' | grep -v '\.git$');do ln -fs $f ~;done
+  for f in $(ls -d ~/.dotfiles/.* | grep -v '\.$' | grep -v '\.git$');do ln -fs "$f" ~;done
 }
 
 [[ -f ~/.extra ]] || {
@@ -18,9 +22,9 @@ ls ~/.dotfiles &>/dev/null || {
   [[ $NAME ]] || NAME=$(whoami)
   [[ $EMAIL ]] || EMAIL=$(git config user.email)
   [[ $HOSTNAME ]] || HOSTNAME=$(hostname)
-  read -p "Name: ($NAME) " NAME
-  read -p "Email: ($EMAIL) " EMAIL
-  read -p "Hostname: ($HOSTNAME) " HOSTNAME
+  read -pr "Name: ($NAME) " NAME </dev/tty
+  read -pr "Email: ($EMAIL) " EMAIL </dev/tty
+  read -pr "Hostname: ($HOSTNAME) " HOSTNAME </dev/tty
   [[ $NAME ]] || NAME=$(whoami)
   [[ $EMAIL ]] || EMAIL=$(git config user.email)
   [[ $HOSTNAME ]] || HOSTNAME=$(hostname)
@@ -41,7 +45,7 @@ EOL
   curl -s https://raw.githubusercontent.com/rupa/z/master/z.sh > ~/.z.sh
   cat > ~/.extra-packages.sh <<EOL
 brew install node brave-browser visual-studio-code microsoft-office
-npm install -g http-server
+npm install -g http-server sfw @antfu/ni
 
 brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep rsync
 brew install bash bash-completion@2 git git-delta tmux
@@ -50,6 +54,7 @@ brew install httpie sampler
 brew tap homebrew/cask-fonts
 brew install font-monaspace-nerd-font
 EOL
+  sudo -n true || sudo -v
   vim ~/.extra-packages.sh
   bash ~/.extra-packages.sh
   cat > ~/.extra-preferences.sh <<EOL
@@ -60,8 +65,8 @@ open ~/.dotfiles/Raw.terminal
 defaults write com.apple.terminal "Default Window Settings" "Raw"
 defaults write com.apple.terminal "Startup Window Settings" "Raw"
 sudo scutil --set HostName "\$HOSTNAME"
-sudo scutil --set LocalHostName "\$HOSTNAME"
 sudo scutil --set ComputerName "\$HOSTNAME"
+sudo scutil --set LocalHostName "\${HOSTNAME%.local}"
 dscacheutil -flushcache
 /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
 sudo chflags nohidden /Volumes
@@ -109,6 +114,7 @@ defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 defaults write com.brave.Browser AppleEnableSwipeNavigateWithScrolls -bool FALSE
 EOL
+  sudo -n true || sudo -v
   vim ~/.extra-preferences.sh
   bash ~/.extra-preferences.sh
 }
