@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-git lfs post-merge "$@"
+git lfs post-merge "$@" 2>/dev/null
 
 DIR=$(git rev-parse --absolute-git-dir)/hooks
 [ -f "$DIR/post-merge" ] && "$DIR/post-merge" "$@"

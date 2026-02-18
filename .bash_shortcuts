@@ -4,6 +4,7 @@
 alias -- -="cd -"
 alias -- ..="cd .."
 alias c="code;code -a ." # reopen last workspace prior to adding current folder to it
+alias cc="IS_SANDBOX=1 claude --dangerously-skip-permissions"
 alias d=docker
 alias dc="docker compose"
 alias g=git
@@ -53,6 +54,7 @@ tmux-launch() {
   check tmux || return
   [[ -z "$TMUX" ]] || return
   [[ -z "$SSH_TTY" ]] || return
+  [[ $TERM_PROGRAM = vscode ]] && return
   if ! silent tmux has-session -t tmux-1
   then
     tmux new-session -d -s tmux-1

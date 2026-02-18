@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-git lfs pre-push "$@"
+git lfs pre-push "$@" 2>/dev/null
 
 DIR=$(git rev-parse --absolute-git-dir)/hooks
 [ -f "$DIR/pre-push" ] && "$DIR/pre-push" "$@"
@@ -11,7 +11,7 @@ branch=$(git rev-parse --abbrev-ref HEAD)
 convention='^([a-z]{3}/)?[a-z0-9-]{1,80}$'
 ok=$'\e[32m✓\e[0m valid branch name'
 ko=$'\e[31m✗\e[0m invalid branch name, continue anyway ? (Y/n) '
-[[ $branch =~ $convention ]] && echo $ok || read -p "$ko" yn
+[[ $branch =~ $convention ]] && echo "$ok" || read -rp "$ko" yn
 [[ -z $yn ]] || [[ $yn =~ ^(Y|y|yes)$ ]] || exit
 
 exec <&-

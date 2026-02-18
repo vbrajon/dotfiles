@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 
-git lfs post-checkout "$@"
+git lfs post-checkout "$@" 2>/dev/null
 
 DIR=$(git rev-parse --absolute-git-dir)/hooks
 [ -f "$DIR/post-checkout" ] && "$DIR/post-checkout" "$@"

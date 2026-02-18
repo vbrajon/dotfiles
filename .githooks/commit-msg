@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 DIR=$(git rev-parse --absolute-git-dir)/hooks
 [ -f "$DIR/commit-msg" ] && "$DIR/commit-msg" "$@"
@@ -9,7 +9,7 @@ commit=$(head -n1 $1)
 convention='^(feat|fix|doc|test|refactor): .{1,120}$'
 ok=$'\e[32m✓\e[0m valid commit message'
 ko=$'\e[31m✗\e[0m invalid commit message, continue anyway ? (Y/n) '
-[[ $commit =~ $convention ]] && echo $ok || read -p "$ko" yn
+[[ $commit =~ $convention ]] && echo "$ok" || read -rp "$ko" yn
 [[ -z $yn ]] || [[ $yn =~ ^(Y|y|yes)$ ]] || exit
 
 exec <&-
