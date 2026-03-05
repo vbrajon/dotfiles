@@ -32,6 +32,8 @@ ls ~/.dotfiles &>/dev/null || {
 NAME="$NAME"
 EMAIL="$EMAIL"
 HOSTNAME="$HOSTNAME"
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
 EOL
   cat > ~/.gitextra <<EOL
 [user]
