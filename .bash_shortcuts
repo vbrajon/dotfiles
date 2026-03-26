@@ -37,7 +37,7 @@ check nvim && alias v=nvim && alias vi=nvim && alias vim=nvim
 [[ "$(uname)" != "Darwin" ]] && alias rm='mv --force -t ~/.Trash --'
 
 # Functions
-h() { history -n;history -a;history | sort -k2 -k1nr | uniq -f1 | sort -n | cut -c8- > ~/.bash_history;history -c;history -r;[[ $# -eq 0 ]] && history | awk '{CMD[$2]++;count++;}END { for (a in CMD)print CMD[a] " " CMD[a]/count*100 "% " a;}' | grep -v "./" | column -c3 -s " " -t | sort -nr | nl | head && history | tail || history | grep "$@"; }
+h() { [[ $# -eq 0 ]] && history | awk '{c[$2]++;n++} END {for (k in c) printf "%d\t%.0f%%\t%s\n",c[k],c[k]/n*100,k}' | sort -rn | head && history | tail || history | grep "$@"; }
 r() { rsync -azvPh "$@"; }
 zz() { cmd=$1;shift;silent z "$@";eval "$cmd"; }
 ssh-launch() {

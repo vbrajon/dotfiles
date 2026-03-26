@@ -12,7 +12,7 @@
   hard = !git reset --hard $([[ $1 -ne 0 ]] && echo HEAD~)$1 "#"
   https = !git remote set-url origin $(git remote get-url origin | sed 's/^git@\\(.*\\):\\/*\\(.*\\)/https:\\/\\/\\1\\/\\2/')
   lg = !git log --abbrev-commit --pretty='%C(auto)%h %C(blue)%ad %C(green)%an %C(auto)%s' --date=human --color=always --shortstat | perl -0777 -pe 's/\\n+\\s+(\\d+) files? changed(?:, (\\d+) insertions?\\(\\+\\))?(?:, (\\d+) deletions?\\(-\\))?\\n*/sprintf \" \\e[33m%df \\e[32m+%d \\e[31m-%d\\e[0m\\n\", $1, $2\\/\\/0, $3\\/\\/0/ge' | fzf --ansi --no-sort --reverse --tiebreak=index
-  o = !git remote -v | grep fetch | awk '{print $2}' | sed 's/.*git@\\(.*\\):\\(.*\\)/https:\\/\\/\\1\\/\\2/' | xargs open
+  open = !git remote -v | grep fetch | awk '{print $2}' | sed 's/.*git@\\(.*\\):\\(.*\\)/https:\\/\\/\\1\\/\\2/' | xargs open
   pl = !git pull --rebase --autostash --no-edit --recurse-submodules
   ps = !git pl && git push
   rename = !git checkout $1 && git branch -m $1 $2 && git push origin -u $2 && git push origin :$1 "#"
