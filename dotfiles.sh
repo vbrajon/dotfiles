@@ -28,12 +28,27 @@ ls ~/.dotfiles &>/dev/null || {
   [[ $NAME ]] || NAME=$(whoami)
   [[ $EMAIL ]] || EMAIL=$(git config user.email)
   [[ $HOSTNAME ]] || HOSTNAME=$(hostname)
-  cat > ~/.extra <<EOL
+  cat > ~/.bash_profile <<EOL
 NAME="$NAME"
 EMAIL="$EMAIL"
 HOSTNAME="$HOSTNAME"
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
+
+. ~/.bash_prompt
+. ~/.bash_shortcuts
+[[ -d "/usr/local" ]] && HOMEBREW_PREFIX="/usr/local"
+[[ -d "/opt/homebrew" ]] && HOMEBREW_PREFIX="/opt/homebrew"
+eval $($HOMEBREW_PREFIX/bin/brew shellenv)
+PATH="$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH:$HOMEBREW_PREFIX/opt/fzf/bin"
+. $HOMEBREW_PREFIX/opt/fzf/shell/completion.bash
+. $HOMEBREW_PREFIX/opt/fzf/shell/key-bindings.bash
+. $HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh
+. ~/.z.sh
+[[ $TERM_PROGRAM = vscode ]] && return
+ssh-launch
+tmux-launch
+
 EOL
   cat > ~/.gitextra <<EOL
 [user]
@@ -46,15 +61,15 @@ EOL
   curl -s https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore >> ~/.gitexcludes
   curl -s https://raw.githubusercontent.com/rupa/z/master/z.sh > ~/.z.sh
   cat > ~/.extra-packages.sh <<EOL
-brew install node brave-browser visual-studio-code microsoft-office
-npm install -g http-server sfw @antfu/ni
+brew install node brave-browser visual-studio-code microsoft-office claude docker-desktop ghostty stats
+npm install -g @antfu/ni @mariozechner/pi-coding-agent agent-browser http-server portless sfw vercel
 
 brew install coreutils findutils gnu-tar gnu-sed gawk gnutls gnu-indent gnu-getopt grep rsync
 brew install bash bash-completion@2 git git-delta tmux
 brew install bat btop duf dust eza fd fzf ripgrep
 brew install httpie sampler
 brew tap homebrew/cask-fonts
-brew install font-monaspace-nerd-font
+brew install font-monaspace-nerd-font font-geist-mono
 EOL
   sudo -n true || sudo -v
   vim ~/.extra-packages.sh
@@ -63,9 +78,8 @@ EOL
 sudo sh -c "echo /opt/homebrew/bin/bash >> /etc/shells"
 chsh -s /opt/homebrew/bin/bash
 osascript -e 'tell application "System Preferences" to quit'
-open ~/.dotfiles/Raw.terminal
-defaults write com.apple.terminal "Default Window Settings" "Raw"
-defaults write com.apple.terminal "Startup Window Settings" "Raw"
+mkdir -p ~/.config/ghostty
+ln -fs ~/.dotfiles/.ghostty.conf ~/.config/ghostty/config
 sudo scutil --set HostName "\$HOSTNAME"
 sudo scutil --set ComputerName "\$HOSTNAME"
 sudo scutil --set LocalHostName "\${HOSTNAME%.local}"
