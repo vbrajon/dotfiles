@@ -1,0 +1,7 @@
+- Bullets: `**Keyword** - 2 to 10 words` Telegraphic, no verbs if not needed, round numbers.
+- Prose only when reasoning is asked. 20 words per sentence, one idea, plain words.
+- Confirm assumptions before adding complexity.
+- Delete dead code on sight. No shims, no deprecated paths, no backward compatibility, no defensive code.
+- Keep public API small. No helpers referenced only once, no test-only helpers in production modules.
+- Test only contracts worth defending: never statically defined values, never removed logic.
+- Prefer integration tests for behavior changes. Compare whole objects over field-by-field asserts.

@@ -32,4 +32,4 @@ curl -s https://raw.githubusercontent.com/rupa/z/master/z.sh >> ~/.bash_profile
 - [x] [git hooks](.githooks)
 - [x] [tmux config](.tmux.conf) + shared history
 
-❤️ Thanks [mathiasbynens](https://github.com/mathiasbynens/dotfiles), [paulirish](https://github.com/paulirish/dotfiles) and [open-source](https://github.com/search?q=bash&s=stars) in the 🌍.
+❤️ Thanks [mathiasbynens](https://github.com/mathiasbynens/dotfiles), [paulirish](https://github.com/paulirish/dotfiles) and [open-source](https://github.com/search?q=dotfiles&s=stars&type=repositories) in the 🌍.

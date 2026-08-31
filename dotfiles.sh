@@ -103,9 +103,12 @@ defaults write com.apple.dock showhidden -bool true
 defaults write com.apple.finder _FXShowPosixPathInTitle -bool true
 defaults write com.apple.finder _FXSortFoldersFirst -bool true
 defaults write com.apple.finder DisableAllAnimations -bool true
+defaults write com.apple.finder FXArrangeGroupViewBy -string "Name"
 defaults write com.apple.finder FXDefaultSearchScope -string "SCcf"
 defaults write com.apple.finder FXEnableExtensionChangeWarning -bool false
 defaults write com.apple.finder FXInfoPanesExpanded -dict General -bool true OpenWith -bool true Privileges -bool true
+defaults write com.apple.finder FXPreferredGroupBy -string "Name"
+defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
 defaults write com.apple.finder QuitMenuItem -bool true
 defaults write com.apple.finder ShowPathbar -bool true
 defaults write com.apple.finder ShowStatusBar -bool true
