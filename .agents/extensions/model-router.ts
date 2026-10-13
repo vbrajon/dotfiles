@@ -79,7 +79,7 @@ async function warmLocal(): Promise<void> {
 			cwd: KEV_DIR,
 			detached: true,
 			stdio: "ignore",
-		}).unref();
+		}).on("error", () => {}).unref();
 	}
 	if (!(await up(`${OLLAMA}/api/tags`))) {
 		spawn("ollama", ["serve"], { detached: true, stdio: "ignore" }).on("error", () => {}).unref();

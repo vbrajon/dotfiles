@@ -1,0 +1,19 @@
+{
+  "theme": "System",
+  "theme_dark": "dark-neon-noir",
+  "font_size": 14,
+  "prefs_width": 403,
+  "files": {
+    "markdown_rendered": false
+  },
+  "file_tree": {
+    "width": 315
+  },
+  "keybinds": {
+    "cmd+b": "files",
+    "cmd+n": "plugin.keys.note_tab",
+    "cmd+shift+-": "split_down",
+    "cmd+shift+l": "split_right",
+    "cmd+shift+t": "plugin.keys.reopen_tab"
+  }
+}

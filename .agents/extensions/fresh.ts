@@ -20,6 +20,9 @@ import { Text } from "@oh-my-pi/pi-tui";
 const CONFIG = `${process.env.HOME}/.omp/agent/config.yml`;
 const KEV_DIR = `${process.env.HOME}/.local/share/kev`;
 const WIDGET = "fresh";
+/** omp may start with a bare PATH and Bun.spawn ignores later PATH edits, so binaries are resolved here. */
+const PATH = [`${process.env.HOME}/.local/bin`, `${process.env.HOME}/.bun/bin`, "/opt/homebrew/bin", process.env.PATH].join(":");
+const bin = (name: string) => Bun.which(name, { PATH });
 
 type Step = { name: string; update: [string, string[]]; version: [string, string[]]; after?: [string, string[]]; cwd?: string };
 
@@ -118,23 +121,27 @@ export default function fresh(pi: ExtensionAPI): void {
 
 	/** Runs every step; a step is reported only when its version probe changed. Lines land as soon as they are known. */
 	async function updateAll(ctx: ExtensionContext, lines: string[]): Promise<void> {
-		const version = async (step: Step) =>
-			(await pi.exec(step.version[0], step.version[1], { cwd: step.cwd, timeout: 20_000 })).stdout.trim();
+		const exec = async (cmd: [string, string[]], cwd: string | undefined, timeout: number) =>
+			(await pi.exec(bin(cmd[0])!, cmd[1], { cwd, timeout })).stdout.trim();
+		const version = (step: Step) => exec(step.version, step.cwd, 20_000);
 		/** omp exposes a sub-second check, so its notice can precede the slow install. */
-		const check = await pi.exec("omp", ["update", "--check"], { timeout: 30_000 });
+		const check = await pi.exec(bin("omp")!, ["update", "--check"], { timeout: 30_000 });
 		const pending = /New version available: (\S+)/.exec(check.stdout)?.[1];
 		if (pending) {
 			lines.push(`omp → ${pending}…`);
 			show(ctx, lines);
 		}
 		for (const step of STEPS) {
+			/** A tool that is not installed, or a checkout that is absent, is nothing to update. */
+			if (!bin(step.update[0]) || !bin(step.version[0]) || (step.after && !bin(step.after[0]))) continue;
+			if (step.cwd && !(await Bun.file(`${step.cwd}/.git/HEAD`).exists())) continue;
 			let line: string | undefined;
 			try {
 				const before = await version(step);
-				await pi.exec(step.update[0], step.update[1], { cwd: step.cwd, timeout: 300_000 });
+				await exec(step.update, step.cwd, 300_000);
 				const after = await version(step);
 				if (before !== after) {
-					if (step.after) await pi.exec(step.after[0], step.after[1], { cwd: step.cwd, timeout: 300_000 });
+					if (step.after) await exec(step.after, step.cwd, 300_000);
 					line = `${step.name}: ${before} → ${after}`;
 				}
 			} catch (error) {

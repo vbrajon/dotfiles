@@ -80,6 +80,9 @@ chsh -s /opt/homebrew/bin/bash
 osascript -e 'tell application "System Preferences" to quit'
 mkdir -p ~/.config/ghostty
 ln -fs ~/.dotfiles/.ghostty.conf ~/.config/ghostty/config
+mkdir -p ~/Library/Application\ Support/Tern/plugins
+ln -fs ~/.dotfiles/.tern/plugins/keys ~/Library/Application\ Support/Tern/plugins/
+cp -n ~/.dotfiles/.tern/settings.json ~/Library/Application\ Support/Tern/settings.json
 sudo scutil --set HostName "\$HOSTNAME"
 sudo scutil --set ComputerName "\$HOSTNAME"
 sudo scutil --set LocalHostName "\${HOSTNAME%.local}"

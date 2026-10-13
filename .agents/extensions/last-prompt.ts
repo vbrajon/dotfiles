@@ -4,10 +4,16 @@
  * Stats are the delta of the last agent run in this session. Only the stats line shimmers.
  * Prompt lines always start with dim `❯`.
  * alt+u jumps to the message in tmux copy-mode.
+ * Tern native surface: a card (fill, so it does not float over the transcript) holding the stats
+ * and the prompt clamped to 2 lines by Tern itself (it wraps the dock at its own width, so
+ * pre-split rows would wrap again), plus a trailing spacer since Tern paints the composer's
+ * context chip over the row above the editor; no shimmer tick, every frame is a protocol round-trip.
  */
 import type { ExtensionAPI, ExtensionContext } from "@oh-my-pi/pi-coding-agent";
 import { theme } from "@oh-my-pi/pi-coding-agent";
-import { Key } from "@oh-my-pi/pi-tui";
+import { Container, Key, Spacer } from "@oh-my-pi/pi-tui";
+import { card, text } from "@oh-my-pi/pi-tui/native/describe";
+import type { NativeNode } from "@oh-my-pi/pi-tui/native/node";
 import { execFile } from "node:child_process";
 
 const WIDGET_KEY = "last-prompt";
@@ -35,6 +41,7 @@ type RunState = {
 	commits: number;
 	baseline?: Totals;
 	widgetOn: boolean;
+	native: boolean;
 	tick?: unknown;
 };
 
@@ -156,6 +163,17 @@ function paintRun(run: string, resetTo: string = FG_RESET): string {
 	return `${out}${resetTo}`;
 }
 
+function statsText(s: RunState): string {
+	return [
+		fmtDuration(s.durationMs ?? 0),
+		`$${fmtCost(s.costUsd ?? 0)}`,
+		`${s.turns}t`,
+		`+${s.added} -${s.removed}`,
+		`${s.files}f`,
+		`${s.commits}c`,
+	].join(SEP);
+}
+
 function buildLines(s: RunState, width: number): string[] {
 	if (!s.lastPrompt) return [];
 	const body = s.lastPrompt.replace(/\s+/g, " ").trim();
@@ -166,19 +184,16 @@ function buildLines(s: RunState, width: number): string[] {
 	const second = rest.length > promptWidth ? `${rest.slice(0, promptWidth - 1)}…` : rest;
 	const promptLines = [theme.fg("dim", `${prefix}${first}`)];
 	if (second) promptLines.push(theme.fg("dim", second));
+	if (!s.idle || s.durationMs == null) return promptLines;
+	return [paintRun(statsText(s)), ...promptLines];
+}
 
-	const ms = s.durationMs;
-	if (!s.idle || ms == null) return promptLines;
-
-	const stats = [
-		fmtDuration(ms),
-		`$${fmtCost(s.costUsd ?? 0)}`,
-		`${s.turns}t`,
-		`+${s.added} -${s.removed}`,
-		`${s.files}f`,
-		`${s.commits}c`,
-	].join(SEP);
-	return [paintRun(stats), ...promptLines];
+/** Stats then the prompt, as Tern lays them out: no rows, so the ANSI path never sees it. */
+function describeCard(s: RunState): NativeNode {
+	const body = s.lastPrompt!.replace(/\s+/g, " ").trim();
+	const children = [text([{ t: `❯ ${body}`, s: "dim" }], { wrap: "word", lines: 2, truncate: "end" })];
+	if (s.idle && s.durationMs != null) children.unshift(text(statsText(s), { wrap: "none", truncate: "end" }));
+	return card({ role: "omp.hook.last-prompt", tone: "neutral", inset: true }, children);
 }
 
 function sessionState(ctx: ExtensionContext): RunState {
@@ -193,6 +208,7 @@ function sessionState(ctx: ExtensionContext): RunState {
 		files: 0,
 		commits: 0,
 		widgetOn: false,
+		native: false,
 	};
 	bySession.set(id, created);
 	return created;
@@ -208,17 +224,23 @@ function showWidget(ctx: ExtensionContext, tick = false): void {
 		}
 		return;
 	}
-	if (!s.widgetOn || !tick) {
-		ctx.ui.setWidget(
-			WIDGET_KEY,
-			() => ({
-				render: (width: number) => buildLines(s, width),
-			}),
-			{ placement: "aboveEditor" },
-		);
-		s.widgetOn = true;
+	if (s.widgetOn && tick) {
+		ctx.ui.setStatus(TICK_KEY, undefined);
+		return;
 	}
-	if (tick) ctx.ui.setStatus(TICK_KEY, undefined);
+	ctx.ui.setWidget(
+		WIDGET_KEY,
+		tui => {
+			s.native = tui.nativeRendering;
+			if (!s.native) return { render: (width: number) => buildLines(s, width) };
+			const col = new Container();
+			col.addChild({ render: () => [], describe: () => describeCard(s) });
+			col.addChild(new Spacer(2));
+			return col;
+		},
+		{ placement: "aboveEditor" },
+	);
+	s.widgetOn = true;
 }
 
 function totalsFromEntries(
@@ -325,7 +347,7 @@ export default function lastPromptExtension(pi: ExtensionAPI) {
 	const syncTick = (ctx: ExtensionContext) => {
 		const s = sessionState(ctx);
 		const animatable =
-			s.idle && s.durationMs != null && Boolean(s.lastPrompt) && ctx.hasUI && process.stdout.isTTY === true;
+			s.idle && s.durationMs != null && Boolean(s.lastPrompt) && !s.native && ctx.hasUI && process.stdout.isTTY === true;
 		if (!animatable) {
 			stopTick(ctx);
 			return;

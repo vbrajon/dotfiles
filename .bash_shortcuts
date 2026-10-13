@@ -54,6 +54,7 @@ tmux-launch() {
   check tmux || return
   [[ -z "$TMUX" ]] || return
   [[ -z "$SSH_TTY" ]] || return
+  [[ $TERM_PROGRAM = tern ]] && return
   [[ $TERM_PROGRAM = vscode ]] && return
   if ! silent tmux has-session -t tmux-1
   then

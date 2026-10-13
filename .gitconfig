@@ -20,7 +20,7 @@
   ssl = !git remote set-url origin $(git remote get-url origin | sed 's/^https:\\/\\/\\([^\\/]*\\)\\/\\(.*\\)/git@\\1\\:\\2/')
   st = "!p=\"${GIT_PREFIX:-.}\"; git status --short --branch && git diff --stat && git ll -4 && printf 'total: %s // web: %s\\n' \"$(GIT_WC_DIR=$p git wc)\" \"$(GIT_WC_DIR=$p git wc js jsx ts tsx vue html css)\""
   track = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
-  wc = "!f() { cd \"${GIT_WC_DIR:-${GIT_PREFIX:-.}}\"; if [ $# -eq 0 ]; then a=$(git ls-files); else ext=$(IFS='|'; echo \"$*\"); a=$(git ls-files | grep -E \"\\.($ext)$\"); fi; at=$(echo \"$a\" | grep -c . || true); [ $at -eq 0 ] && printf '0 files - 0 lines - 0 chars' && return; aw=$(echo \"$a\" | xargs wc -lc 2>/dev/null | awk '{l=$1;c=$2} /total$/{tl+=$1;tc+=$2} END{if(tl) print tl,tc; else print l,c}'); printf '%s files - %s lines - %s chars' $at $(echo $aw | numfmt --to=si --field=1 | numfmt --to=iec --field=2); }; f"
+  wc = "!f() { cd \"${GIT_WC_DIR:-${GIT_PREFIX:-.}}\"; if [ $# -eq 0 ]; then a=$(git ls-files); else ext=$(IFS='|'; echo \"$*\"); a=$(git ls-files | grep -E \"\\.($ext)$\"); fi; at=$(echo \"$a\" | grep -c . || true); [ $at -eq 0 ] && printf '0 files - 0 lines - 0 chars' && return; aw=$(echo \"$a\" | tr '\\n' '\\0' | xargs -0 wc -lc 2>/dev/null | awk '{l=$1;c=$2} /total$/{tl+=$1;tc+=$2} END{if(tl) print tl,tc; else print l,c}'); printf '%s files - %s lines - %s chars' $at $(echo $aw | numfmt --to=si --field=1 | numfmt --to=iec --field=2); }; f"
 [core]
   editor = vim
   excludesfile = ~/.gitexcludes
@@ -51,7 +51,13 @@
 [include]
   path = ~/.gitextra
 [filter "lfs"]
+	required = true
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
-	required = true
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential

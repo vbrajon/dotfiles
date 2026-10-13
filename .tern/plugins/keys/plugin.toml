@@ -1,0 +1,7 @@
+schema = 1
+id = "keys"
+name = "Keys"
+version = "0.1.0"
+description = "⌘N opens a session note in its own tab; one-shot command that writes the user's chords and Markdown source default through the app"
+icon = "key"
+window = "window.luau"
