@@ -28,6 +28,11 @@ tern.command({
 		cx.settings:bind("cmd+shift+-", "split_down")
 		cx.settings:bind("cmd+n", "plugin.keys.note_tab")
 		cx.settings:bind("cmd+shift+t", "plugin.keys.reopen_tab")
+		cx.settings:bind("cmd+enter", "zoom")
+		cx.settings:bind("cmd+left", "focus_pane:left")
+		cx.settings:bind("cmd+right", "focus_pane:right")
+		cx.settings:bind("cmd+up", "focus_pane:up")
+		cx.settings:bind("cmd+down", "focus_pane:down")
 		-- The preference's dotted key is found by its leaf name, so the group it lives in need not be known.
 		local key: string? = nil
 		for k in pairs(cx.settings:list()) do

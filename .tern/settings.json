@@ -11,9 +11,14 @@
   },
   "keybinds": {
     "cmd+b": "files",
+    "cmd+down": "focus_pane:down",
+    "cmd+enter": "zoom",
+    "cmd+left": "focus_pane:left",
     "cmd+n": "plugin.keys.note_tab",
+    "cmd+right": "focus_pane:right",
     "cmd+shift+-": "split_down",
     "cmd+shift+l": "split_right",
-    "cmd+shift+t": "plugin.keys.reopen_tab"
+    "cmd+shift+t": "plugin.keys.reopen_tab",
+    "cmd+up": "focus_pane:up"
   }
 }
