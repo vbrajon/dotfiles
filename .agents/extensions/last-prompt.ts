@@ -1,13 +1,13 @@
 /**
  * Last prompt: 2-line preview above the editor.
  * Idle / finished: stats (`time | $cost | Nt | +a -b | Nf | Nc`) then 2 prompt lines.
- * Stats are the delta of the last agent run in this session. Only the stats line shimmers.
+ * Stats are the delta of the last agent run in this session.
  * Prompt lines always start with dim `❯`.
  * alt+u jumps to the message in tmux copy-mode.
  * Tern native surface: a card (fill, so it does not float over the transcript) holding the stats
  * and the prompt clamped to 2 lines by Tern itself (it wraps the dock at its own width, so
  * pre-split rows would wrap again), plus a trailing spacer since Tern paints the composer's
- * context chip over the row above the editor; no shimmer tick, every frame is a protocol round-trip.
+ * context chip over the row above the editor.
  */
 import type { ExtensionAPI, ExtensionContext } from "@oh-my-pi/pi-coding-agent";
 import { theme } from "@oh-my-pi/pi-coding-agent";
@@ -17,12 +17,7 @@ import type { NativeNode } from "@oh-my-pi/pi-tui/native/node";
 import { execFile } from "node:child_process";
 
 const WIDGET_KEY = "last-prompt";
-const TICK_KEY = "last-prompt-tick";
 const NEEDLE_LEN = 24;
-const STOPS = 14;
-const FG_RESET = "\x1b[39m";
-const FRAME_MS = 70;
-const PERIOD_MS = 1800;
 const SEP = " | ";
 const GIT_COMMIT = /(?:^|[\n;&]|&&|\|\|)\s*git\s+commit\b/;
 
@@ -41,14 +36,9 @@ type RunState = {
 	commits: number;
 	baseline?: Totals;
 	widgetOn: boolean;
-	native: boolean;
-	tick?: unknown;
 };
 
 const bySession = new Map<string, RunState>();
-
-let cachedMode: string | undefined;
-let cachedPalette: readonly string[] | undefined;
 
 function extractText(content: unknown): string {
 	if (typeof content === "string") return content;
@@ -127,42 +117,6 @@ function collectFilePaths(details: unknown, args: unknown, files: Set<string>): 
 	}
 }
 
-function palette(): readonly string[] {
-	let mode = "truecolor";
-	try {
-		mode = theme.getColorMode();
-	} catch {
-		// theme not initialized yet
-	}
-	if (cachedPalette && cachedMode === mode) return cachedPalette;
-	const format = mode === "truecolor" ? "ansi-16m" : "ansi-256";
-	const next: string[] = [];
-	for (let i = 0; i < STOPS; i++) {
-		next.push(Bun.color(`hsl(${Math.round((i / STOPS) * 330)}, 90%, 62%)`, format) ?? "");
-	}
-	cachedMode = mode;
-	cachedPalette = next;
-	return next;
-}
-
-function paintRun(run: string, resetTo: string = FG_RESET): string {
-	const stops = palette();
-	const chars = Array.from(run);
-	const p = (Date.now() % PERIOD_MS) / PERIOD_MS;
-	let out = "";
-	let prev = "";
-	for (let i = 0; i < chars.length; i++) {
-		const t = (i / chars.length + p) % 1;
-		const color = stops[Math.floor(t * STOPS) % STOPS] ?? stops[0] ?? "";
-		if (color !== prev) {
-			out += color;
-			prev = color;
-		}
-		out += chars[i];
-	}
-	return `${out}${resetTo}`;
-}
-
 function statsText(s: RunState): string {
 	return [
 		fmtDuration(s.durationMs ?? 0),
@@ -185,7 +139,7 @@ function buildLines(s: RunState, width: number): string[] {
 	const promptLines = [theme.fg("dim", `${prefix}${first}`)];
 	if (second) promptLines.push(theme.fg("dim", second));
 	if (!s.idle || s.durationMs == null) return promptLines;
-	return [paintRun(statsText(s)), ...promptLines];
+	return [theme.fg("accent", statsText(s)), ...promptLines];
 }
 
 /** Stats then the prompt, as Tern lays them out: no rows, so the ANSI path never sees it. */
@@ -208,13 +162,12 @@ function sessionState(ctx: ExtensionContext): RunState {
 		files: 0,
 		commits: 0,
 		widgetOn: false,
-		native: false,
 	};
 	bySession.set(id, created);
 	return created;
 }
 
-function showWidget(ctx: ExtensionContext, tick = false): void {
+function showWidget(ctx: ExtensionContext): void {
 	if (!ctx.hasUI) return;
 	const s = sessionState(ctx);
 	if (!s.lastPrompt) {
@@ -224,15 +177,10 @@ function showWidget(ctx: ExtensionContext, tick = false): void {
 		}
 		return;
 	}
-	if (s.widgetOn && tick) {
-		ctx.ui.setStatus(TICK_KEY, undefined);
-		return;
-	}
 	ctx.ui.setWidget(
 		WIDGET_KEY,
 		tui => {
-			s.native = tui.nativeRendering;
-			if (!s.native) return { render: (width: number) => buildLines(s, width) };
+			if (!tui.nativeRendering) return { render: (width: number) => buildLines(s, width) };
 			const col = new Container();
 			col.addChild({ render: () => [], describe: () => describeCard(s) });
 			col.addChild(new Spacer(2));
@@ -336,28 +284,6 @@ function applyWindow(s: RunState, t: Totals & { prompt?: string }): void {
 }
 
 export default function lastPromptExtension(pi: ExtensionAPI) {
-	const stopTick = (ctx: ExtensionContext) => {
-		const s = sessionState(ctx);
-		if (s.tick !== undefined) {
-			(ctx.clearTimer as (t: unknown) => void)(s.tick);
-			s.tick = undefined;
-		}
-	};
-
-	const syncTick = (ctx: ExtensionContext) => {
-		const s = sessionState(ctx);
-		const animatable =
-			s.idle && s.durationMs != null && Boolean(s.lastPrompt) && !s.native && ctx.hasUI && process.stdout.isTTY === true;
-		if (!animatable) {
-			stopTick(ctx);
-			return;
-		}
-		if (s.tick !== undefined) return;
-		s.tick = ctx.setInterval(() => {
-			showWidget(ctx, true);
-		}, FRAME_MS);
-	};
-
 	function rebuildFromSession(ctx: ExtensionContext) {
 		const s = sessionState(ctx);
 		s.durationMs = undefined;
@@ -369,7 +295,6 @@ export default function lastPromptExtension(pi: ExtensionAPI) {
 		s.idle = true;
 		s.widgetOn = false;
 		showWidget(ctx);
-		syncTick(ctx);
 	}
 
 	pi.on("session_start", (_e, ctx) => rebuildFromSession(ctx));
@@ -419,7 +344,6 @@ export default function lastPromptExtension(pi: ExtensionAPI) {
 		}
 		s.durationMs = undefined;
 		showWidget(ctx);
-		syncTick(ctx);
 	});
 
 	pi.on("agent_end", (event, ctx) => {
@@ -442,11 +366,9 @@ export default function lastPromptExtension(pi: ExtensionAPI) {
 		}
 		s.baseline = undefined;
 		showWidget(ctx);
-		syncTick(ctx);
 	});
 
 	pi.on("session_shutdown", (_event, ctx) => {
-		stopTick(ctx);
 		bySession.delete(ctx.sessionManager.getSessionId());
 	});
 
