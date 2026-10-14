@@ -135,6 +135,9 @@ defaults write NSGlobalDomain NSAutomaticPeriodSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticQuoteSubstitutionEnabled -bool false
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 defaults write com.brave.Browser AppleEnableSwipeNavigateWithScrolls -bool FALSE
+defaults write com.tinycast.app hotkey.togglePalette -string '{"combo":{"_0":{"carbonKeyCode":118,"carbonModifiers":0}}}'
+cp ~/.dotfiles/.keymap.plist ~/Library/LaunchAgents/keymap.plist
+launchctl bootstrap gui/\$(id -u) ~/Library/LaunchAgents/keymap.plist
 EOL
   sudo -n true || sudo -v
   vim ~/.extra-preferences.sh
