@@ -1,6 +1,7 @@
 /**
  * Last prompt: 2-line preview above the editor.
- * Idle / finished: stats (`time | $cost | Nt | +a -b | Nf | Nc`) then 2 prompt lines.
+ * Idle / finished: stats (`time | $cost | Nt | +a -b | Nf | Nc`) then 2 prompt lines, the whole
+ * block on the tool-success background so a finished turn is visible at a glance.
  * Stats are the delta of the last agent run in this session.
  * Prompt lines always start with dim `❯`.
  * alt+u jumps to the message in tmux copy-mode.
@@ -11,7 +12,7 @@
  */
 import type { ExtensionAPI, ExtensionContext } from "@oh-my-pi/pi-coding-agent";
 import { theme } from "@oh-my-pi/pi-coding-agent";
-import { Container, Key, Spacer } from "@oh-my-pi/pi-tui";
+import { Container, Key, Spacer, truncateToWidth } from "@oh-my-pi/pi-tui";
 import { card, text } from "@oh-my-pi/pi-tui/native/describe";
 import type { NativeNode } from "@oh-my-pi/pi-tui/native/node";
 import { execFile } from "node:child_process";
@@ -136,18 +137,30 @@ function buildLines(s: RunState, width: number): string[] {
 	const first = body.slice(0, promptWidth);
 	const rest = body.slice(promptWidth);
 	const second = rest.length > promptWidth ? `${rest.slice(0, promptWidth - 1)}…` : rest;
-	const promptLines = [theme.fg("dim", `${prefix}${first}`)];
-	if (second) promptLines.push(theme.fg("dim", second));
-	if (!s.idle || s.durationMs == null) return promptLines;
-	return [theme.fg("accent", statsText(s)), ...promptLines];
+	const promptLines = [`${prefix}${first}`];
+	if (second) promptLines.push(second);
+	if (!s.idle || s.durationMs == null) return promptLines.map(line => theme.fg("dim", line));
+	const bg = "toolSuccessBg";
+	const rows = [
+		theme.fgOnBg("accent", bg, truncateToWidth(statsText(s), width, "…", true)),
+		...promptLines.map(line => theme.fgOnBg("dim", bg, truncateToWidth(line, width, "…", true))),
+	];
+	return rows.map(row => theme.bgFill(bg, row));
 }
 
-/** Stats then the prompt, as Tern lays them out: no rows, so the ANSI path never sees it. */
+/** Head row: stats beside the Done chip (Running while the turn is on); body: the prompt, padded like omp's tool cards (no inset). */
 function describeCard(s: RunState): NativeNode {
 	const body = s.lastPrompt!.replace(/\s+/g, " ").trim();
-	const children = [text([{ t: `❯ ${body}`, s: "dim" }], { wrap: "word", lines: 2, truncate: "end" })];
-	if (s.idle && s.durationMs != null) children.unshift(text(statsText(s), { wrap: "none", truncate: "end" }));
-	return card({ role: "omp.hook.last-prompt", tone: "neutral", inset: true }, children);
+	const done = s.idle && s.durationMs != null;
+	return card(
+		{
+			role: "omp.hook",
+			tone: done ? "success" : "neutral",
+			head: done ? [{ t: statsText(s), s: "success" }] : undefined,
+			status: done ? "done" : "running",
+		},
+		[text([{ t: `❯ ${body}`, s: "dim" }], { wrap: "word", lines: 2, truncate: "end" })],
+	);
 }
 
 function sessionState(ctx: ExtensionContext): RunState {
