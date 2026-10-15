@@ -35,6 +35,7 @@ tern.command({
 		cx.settings:bind("cmd+down", "focus_pane:down")
 		-- Web links open in the default browser; ⌘-click opens the other target (Tern).
 		cx.settings:set("link_target", "Browser")
+		cx.settings:set("reduce_motion", "on")
 		-- The preference's dotted key is found by its leaf name, so the group it lives in need not be known.
 		local key: string? = nil
 		for k in pairs(cx.settings:list()) do

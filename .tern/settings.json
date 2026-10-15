@@ -1,6 +1,7 @@
 {
   "theme": "System",
   "theme_dark": "dark-neon-noir",
+  "reduce_motion": "on",
   "link_target": "Browser",
   "font_size": 14,
   "prefs_width": 403,
