@@ -53,6 +53,21 @@ tern.command({
 	end,
 })
 
+-- Clicked video/audio paths open in macOS Quick Look instead of a Tern file block.
+local MEDIA = { mp4 = true, mov = true, m4v = true, webm = true, mkv = true, avi = true, mp3 = true, m4a = true, wav = true, aac = true, flac = true }
+tern.route.open(function(req)
+	local ext = string.lower(string.match(req.path, "%.([%w]+)$") or "")
+	if not MEDIA[ext] then
+		return nil
+	end
+	tern.process.run({ "qlmanage", "-p", req.path }, function(result, cx)
+		if result.status ~= 0 and cx then
+			cx:toast("error", "Quick Look failed", result.stderr)
+		end
+	end)
+	return { handled = true }
+end)
+
 -- ⌘⇧T: reopen the last closed tab. Tern only reopens notes, so the window half keeps a snapshot of
 -- every tab (split tree; per leaf the cwd, file path or url) refreshed on each event, and rebuilds
 -- the newest closed one as a new tab. A terminal comes back as a fresh shell in its cwd: its
