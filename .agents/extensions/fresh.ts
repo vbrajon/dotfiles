@@ -10,6 +10,7 @@
  * Each role points at the head of its line (highest identity.revision); the
  * remaining lines become its concrete `retry.fallbackChains` entry. Chains
  * must be `provider/id` selectors: `@role` aliases are rejected there.
+ * `advisor` is not synced: config.yml aliases it to `@task`.
  *
  * /update runs the same pipeline on demand.
  */
@@ -52,7 +53,6 @@ const LINES: Record<string, (model: Model) => boolean> = {
 /** Role -> ordered lines: first present line is the role, the rest its fallback chain. */
 const ROLE_LINES: Record<string, string[]> = {
 	default: ["fable", "astra", "opus", "grok"],
-	advisor: ["astra", "opus", "grok"],
 	slow: ["astra", "opus", "grok"],
 	task: ["opus", "grok"],
 	smol: ["grok"],
